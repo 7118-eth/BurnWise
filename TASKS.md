@@ -76,8 +76,8 @@
 
 ## Phase 5: Enhanced Features (Current Development)
 - [x] Architecture planning for new features
-- [ ] Settings service with JSON configuration
-- [ ] Configurable currencies (enable/disable)
+- [x] Settings service with JSON configuration
+- [x] Configurable currencies (enable/disable)
 - [ ] Editable categories with UI management
 - [ ] Category merge with transaction migration
 - [ ] Recurring transactions model and service
@@ -87,12 +87,12 @@
 - [ ] Comprehensive tests for new features
 
 ### Implementation Breakdown:
-#### Settings & Configuration
-- [ ] Create settings model and service
-- [ ] Implement JSON settings file (data/settings.json)
-- [ ] Add currency configuration UI
-- [ ] Validate currency changes against existing transactions
-- [ ] Default enabled currencies: USD, EUR, AED
+#### Settings & Configuration ✅
+- [x] Create settings model and service
+- [x] Implement JSON settings file (data/settings.json)
+- [x] Add currency configuration UI
+- [x] Validate currency changes against existing transactions
+- [x] Default enabled currencies: USD, EUR, AED
 
 #### Category Management
 - [ ] Create category management view (accessible via 'c')
