@@ -74,9 +74,51 @@
   - [ ] End-to-end UI tests
   - [ ] Performance benchmarks
 
+## Phase 5: Enhanced Features (Current Development)
+- [x] Architecture planning for new features
+- [ ] Settings service with JSON configuration
+- [ ] Configurable currencies (enable/disable)
+- [ ] Editable categories with UI management
+- [ ] Category merge with transaction migration
+- [ ] Recurring transactions model and service
+- [ ] Recurring transaction UI
+- [ ] Yearly projections based on recurring expenses
+- [ ] Enhanced reports with projections
+- [ ] Comprehensive tests for new features
+
+### Implementation Breakdown:
+#### Settings & Configuration
+- [ ] Create settings model and service
+- [ ] Implement JSON settings file (data/settings.json)
+- [ ] Add currency configuration UI
+- [ ] Validate currency changes against existing transactions
+- [ ] Default enabled currencies: USD, EUR, AED
+
+#### Category Management
+- [ ] Create category management view (accessible via 'c')
+- [ ] Add edit functionality (name, icon, color)
+- [ ] Implement category merge operation
+- [ ] Add category history tracking
+- [ ] Prevent deletion of used categories
+
+#### Recurring Transactions
+- [ ] Create recurring transaction model
+- [ ] Add database migrations for recurring_transactions table
+- [ ] Implement recurrence service (daily/weekly/monthly/yearly)
+- [ ] Build management UI for recurring transactions
+- [ ] Add automatic transaction generation
+- [ ] Handle edge cases (skip, edit single occurrence)
+
+#### Projections & Reports
+- [ ] Create projection service
+- [ ] Calculate monthly averages from historical data
+- [ ] Factor in recurring transactions
+- [ ] Add projection view to reports
+- [ ] Create ASCII visualization charts
+- [ ] Add confidence levels based on data consistency
+
 ## Additional Features
 - [ ] Data backup/restore
-- [ ] Recurring transactions
 - [ ] Transaction attachments
 - [ ] Multi-account support
 - [ ] Goals tracking

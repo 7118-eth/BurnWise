@@ -169,3 +169,169 @@ make test-cover    # Generate coverage report
 - SQLite browser for database inspection
 - Test individual components in isolation
 - Use `tea.Printf` for UI debugging
+
+## Upcoming Features Architecture
+
+### 1. Editable Categories (UI-Based Approach)
+
+**Rationale**: UI-based editing provides better control over edge cases and user experience.
+
+**Implementation Plan**:
+- **Category Management View**: New UI view accessible via 'c' from dashboard
+- **Features**:
+  - List all categories with usage counts
+  - Edit category name, icon, and color
+  - Create custom categories
+  - Delete unused categories only
+  - Merge categories with transaction migration
+- **Edge Case Handling**:
+  - Cannot delete categories with existing transactions
+  - Merge operation: transfers all transactions to target category
+  - Maintain audit trail of category changes
+  - Prevent duplicate category names within same type
+
+**Database Changes**:
+```sql
+-- Add category history table
+CREATE TABLE category_history (
+    id INTEGER PRIMARY KEY,
+    category_id INTEGER NOT NULL,
+    old_name VARCHAR(100),
+    new_name VARCHAR(100),
+    action VARCHAR(20), -- 'rename', 'merge', 'delete'
+    target_category_id INTEGER,
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+```
+
+### 2. Configurable Currencies
+
+**Settings File**: `data/settings.json`
+
+```json
+{
+  "currencies": {
+    "enabled": ["USD", "EUR", "AED"],
+    "default": "USD",
+    "fixed_rates": {
+      "AED": 3.6725
+    }
+  },
+  "ui": {
+    "date_format": "2006-01-02",
+    "decimal_places": 2
+  }
+}
+```
+
+**Implementation**:
+- **Settings Service**: Load/save configuration
+- **Currency Management View**: Toggle currencies on/off
+- **Validation**: Prevent disabling currencies with existing transactions
+- **Migration**: Convert disabled currency transactions to default currency
+
+### 3. Recurring Transactions
+
+**Model Structure**:
+```go
+type RecurringTransaction struct {
+    ID              uint
+    Type            TransactionType
+    Amount          float64
+    Currency        string
+    CategoryID      uint
+    Description     string
+    Frequency       RecurrenceFrequency // daily, weekly, monthly, yearly
+    FrequencyValue  int                 // e.g., every 2 weeks
+    StartDate       time.Time
+    EndDate         *time.Time
+    LastProcessed   *time.Time
+    IsActive        bool
+    NextDueDate     time.Time
+    // Relationships
+    Category        Category
+    Transactions    []Transaction // Generated transactions
+}
+
+type RecurrenceFrequency string
+const (
+    FrequencyDaily   RecurrenceFrequency = "daily"
+    FrequencyWeekly  RecurrenceFrequency = "weekly"
+    FrequencyMonthly RecurrenceFrequency = "monthly"
+    FrequencyYearly  RecurrenceFrequency = "yearly"
+)
+```
+
+**Features**:
+- **Automatic Generation**: Daily job to create due transactions
+- **Manual Override**: Edit/skip individual occurrences
+- **UI Management**: List, create, edit, pause recurring transactions
+- **Smart Detection**: Suggest recurring patterns from transaction history
+
+### 4. Yearly Projections
+
+**Projection Algorithm**:
+1. Calculate average monthly expenses from last 3-6 months
+2. Include all active recurring transactions
+3. Factor in seasonal variations (if data available)
+4. Project forward 12 months
+
+**Report Enhancements**:
+- **Projection View**: New section in reports showing:
+  - Projected monthly expenses
+  - Projected yearly total
+  - Budget vs projection comparison
+  - Confidence level based on data consistency
+- **Visualization**: ASCII charts showing trends
+
+**API Structure**:
+```go
+type YearlyProjection struct {
+    Year                int
+    MonthlyProjections  []MonthProjection
+    TotalProjected      float64
+    RecurringTotal      float64
+    VariableTotal       float64
+    ConfidenceLevel     float64 // 0-1
+}
+
+type MonthProjection struct {
+    Month           time.Month
+    ProjectedAmount float64
+    RecurringAmount float64
+    VariableAmount  float64
+    BudgetAmount    float64
+}
+```
+
+## Implementation Priority
+
+1. **Phase 1: Settings & Currency Configuration**
+   - Settings service and JSON configuration
+   - Currency enable/disable UI
+   - Migration logic for currency changes
+
+2. **Phase 2: Category Management**
+   - Category management UI view
+   - Edit/merge functionality
+   - Transaction migration on category changes
+   - History tracking
+
+3. **Phase 3: Recurring Transactions**
+   - Data model and migrations
+   - Service layer for processing
+   - UI for management
+   - Automatic transaction generation
+
+4. **Phase 4: Projections & Enhanced Reports**
+   - Projection calculation service
+   - Enhanced reports view
+   - Visualization components
+
+## Migration Strategy
+
+1. **Database Migrations**: Version-controlled migrations
+2. **Data Safety**: Backup before major changes
+3. **Rollback Plan**: Each feature can be disabled via settings
+4. **Testing**: Comprehensive tests for edge cases
