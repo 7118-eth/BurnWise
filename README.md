@@ -6,11 +6,13 @@ A fast, keyboard-driven terminal application for personal finance management bui
 
 - 💰 **Income & Expense Tracking** - Record all your financial transactions
 - 🌍 **Multi-Currency Support** - Track expenses in multiple currencies with automatic conversion
+- 🔧 **Configurable Currencies** - Enable/disable currencies based on your needs
 - 📊 **Budget Management** - Set monthly/yearly budgets and track progress
 - 📈 **Financial Reports** - View spending trends and category breakdowns
 - ⌨️ **Keyboard-First Design** - Navigate entirely with keyboard shortcuts
 - 🔍 **Smart Search** - Filter transactions by date, category, or amount
 - 📁 **Data Export** - Export your data to CSV for external analysis
+- ⚙️ **Settings Management** - JSON-based configuration with currency preferences
 
 ## Installation
 
@@ -61,7 +63,7 @@ Date        Category        Description          Amount
 10/15       💼 Salary      Monthly salary     +$5,000.00
 10/14       🏠 Rent        October rent       -$1,500.00
 
-[n]ew  [t]ransactions  [b]udgets  [r]eports  [q]uit
+[n]ew  [t]ransactions  [b]udgets  [r]eports  c[u]rrencies  [q]uit
 ```
 
 ### Keyboard Shortcuts
@@ -84,7 +86,8 @@ Date        Category        Description          Amount
 - `t` - View all transactions
 - `b` - Manage budgets
 - `r` - View reports
-- `c` - Manage categories
+- `u` - Currency settings
+- `c` - Manage categories (coming soon)
 - `e` - Edit selected item
 - `d` - Delete selected item (with confirmation)
 - `f` - Filter options
@@ -107,23 +110,27 @@ Date        Category        Description          Amount
 3. Select a category and set monthly limit
 4. Track spending against budgets in real-time
 
-### Supported Currencies
+### Currency Management
 
+Press `u` from the dashboard to access currency settings where you can:
+- Enable/disable currencies for your transactions
+- View which currencies are currently active
+- See fixed exchange rates (e.g., AED: 1 USD = 3.6725 AED)
+
+Default enabled currencies:
 - **USD** - US Dollar (base currency)
 - **EUR** - Euro
-- **GBP** - British Pound
-- **JPY** - Japanese Yen
-- **CHF** - Swiss Franc
-- **CAD** - Canadian Dollar
-- **AUD** - Australian Dollar
-- **NZD** - New Zealand Dollar
-- **AED** - UAE Dirham (fixed rate: 1 USD = 3.6725 AED)
+- **AED** - UAE Dirham (fixed rate)
+
+You can enable additional currencies from a list of 38+ supported currencies including GBP, JPY, CHF, CAD, AUD, CNY, INR, and more.
 
 ## Data Storage
 
-Your financial data is stored locally in an SQLite database at:
-- Linux/Mac: `~/.local/share/budget-tracker/budget.db`
-- Windows: `%APPDATA%\budget-tracker\budget.db`
+Your financial data is stored locally:
+- **Database**: 
+  - Linux/Mac: `~/.local/share/budget-tracker/budget.db`
+  - Windows: `%APPDATA%\budget-tracker\budget.db`
+- **Settings**: `./data/settings.json`
 
 ### Backup
 
@@ -139,21 +146,34 @@ cp ~/.local/share/budget-tracker/budget.db budget-backup.db
 
 ## Configuration
 
-Create a configuration file at `~/.config/budget-tracker/config.toml`:
+The application uses a JSON settings file (`data/settings.json`) that is automatically created on first run:
 
-```toml
-# Default currency for new transactions
-default_currency = "USD"
-
-# Date format for display
-date_format = "2006-01-02"
-
-# Start of fiscal month (1-28)
-fiscal_month_start = 1
-
-# Exchange rate cache duration (minutes)
-exchange_rate_cache = 60
+```json
+{
+  "currencies": {
+    "enabled": ["USD", "EUR", "AED"],
+    "default": "USD",
+    "fixed_rates": {
+      "AED": 3.6725
+    }
+  },
+  "ui": {
+    "date_format": "2006-01-02",
+    "decimal_places": 2,
+    "theme": "default"
+  },
+  "version": "1.0.0"
+}
 ```
+
+### Settings Explained
+
+- **currencies.enabled**: List of currencies available in the application
+- **currencies.default**: Default currency for new transactions
+- **currencies.fixed_rates**: Currencies with fixed exchange rates (not fetched from API)
+- **ui.date_format**: Date display format (Go time format)
+- **ui.decimal_places**: Number of decimal places for amounts
+- **ui.theme**: UI theme (currently only "default")
 
 ## Development
 

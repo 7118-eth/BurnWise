@@ -307,12 +307,12 @@ type MonthProjection struct {
 
 ## Implementation Priority
 
-1. **Phase 1: Settings & Currency Configuration**
+1. **Phase 1: Settings & Currency Configuration** ✅ COMPLETED
    - Settings service and JSON configuration
    - Currency enable/disable UI
    - Migration logic for currency changes
 
-2. **Phase 2: Category Management**
+2. **Phase 2: Category Management** (NEXT)
    - Category management UI view
    - Edit/merge functionality
    - Transaction migration on category changes
@@ -335,3 +335,32 @@ type MonthProjection struct {
 2. **Data Safety**: Backup before major changes
 3. **Rollback Plan**: Each feature can be disabled via settings
 4. **Testing**: Comprehensive tests for edge cases
+
+## Recent Changes
+
+### Currency Configuration (Completed)
+- Added `SettingsService` for managing application configuration
+- Created currency settings UI accessible via 'u' from dashboard
+- Implemented enable/disable functionality with validation
+- Settings stored in `data/settings.json` with automatic creation
+- Updated `CurrencyService` to use settings-based enabled currencies
+- Fixed rates now stored in settings (e.g., AED = 3.6725)
+- Added protection against disabling currencies with existing transactions
+- Thread-safe concurrent access to settings
+
+### Key Components Added
+1. **Models**:
+   - `models.Settings`: Application configuration structure
+   - `models.CategoryHistory`: For tracking category changes
+
+2. **Services**:
+   - `SettingsService`: Manages JSON configuration file
+   - Updated `CurrencyService`: Now uses settings for enabled currencies
+
+3. **UI Views**:
+   - `CurrencySettings`: Interactive currency management interface
+
+4. **Integration Points**:
+   - Main app initialization includes settings service
+   - All services updated to accept settings service
+   - Dashboard updated with 'u' shortcut for currency settings
