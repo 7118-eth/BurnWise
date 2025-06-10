@@ -43,6 +43,7 @@ func runMigrations(db *gorm.DB) error {
 		&models.Transaction{},
 		&models.Category{},
 		&models.Budget{},
+		&models.CategoryHistory{},
 	)
 }
 

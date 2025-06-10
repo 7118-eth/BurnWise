@@ -15,7 +15,12 @@ import (
 func TestTransactionService_Create(t *testing.T) {
 	db := test.SetupTestDB(t)
 	repo := repository.NewTransactionRepository(db)
-	currencyService := NewCurrencyService()
+	
+	tempDir := t.TempDir()
+	settingsService, err := NewSettingsService(tempDir)
+	require.NoError(t, err)
+	currencyService := NewCurrencyService(settingsService)
+	
 	service := NewTransactionService(repo, currencyService)
 	
 	category := test.CreateTestCategory(t, db, "Food", models.TransactionTypeExpense)
@@ -29,7 +34,7 @@ func TestTransactionService_Create(t *testing.T) {
 		Date:        time.Now(),
 	}
 	
-	err := service.Create(tx)
+	err = service.Create(tx)
 	require.NoError(t, err)
 	assert.Greater(t, tx.ID, uint(0))
 	assert.Equal(t, tx.Amount, tx.AmountUSD)
@@ -38,7 +43,12 @@ func TestTransactionService_Create(t *testing.T) {
 func TestTransactionService_CreateWithCurrency(t *testing.T) {
 	db := test.SetupTestDB(t)
 	repo := repository.NewTransactionRepository(db)
-	currencyService := NewCurrencyService()
+	
+	tempDir := t.TempDir()
+	settingsService, err := NewSettingsService(tempDir)
+	require.NoError(t, err)
+	currencyService := NewCurrencyService(settingsService)
+	
 	service := NewTransactionService(repo, currencyService)
 	
 	category := test.CreateTestCategory(t, db, "Food", models.TransactionTypeExpense)
@@ -52,7 +62,7 @@ func TestTransactionService_CreateWithCurrency(t *testing.T) {
 		Date:        time.Now(),
 	}
 	
-	err := service.Create(tx)
+	err = service.Create(tx)
 	require.NoError(t, err)
 	assert.Greater(t, tx.ID, uint(0))
 	assert.InDelta(t, 27.23, tx.AmountUSD, 0.01)
@@ -61,7 +71,12 @@ func TestTransactionService_CreateWithCurrency(t *testing.T) {
 func TestTransactionService_GetCurrentMonthSummary(t *testing.T) {
 	db := test.SetupTestDB(t)
 	repo := repository.NewTransactionRepository(db)
-	currencyService := NewCurrencyService()
+	
+	tempDir := t.TempDir()
+	settingsService, err := NewSettingsService(tempDir)
+	require.NoError(t, err)
+	currencyService := NewCurrencyService(settingsService)
+	
 	service := NewTransactionService(repo, currencyService)
 	
 	incomeCategory := test.CreateTestCategory(t, db, "Salary", models.TransactionTypeIncome)

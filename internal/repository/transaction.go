@@ -170,3 +170,11 @@ func (r *TransactionRepository) GetRecentTransactions(limit int) ([]*models.Tran
 		Find(&transactions).Error
 	return transactions, err
 }
+
+func (r *TransactionRepository) CountByCurrency(currency string) (int64, error) {
+	var count int64
+	err := r.db.Model(&models.Transaction{}).
+		Where("currency = ?", currency).
+		Count(&count).Error
+	return count, err
+}

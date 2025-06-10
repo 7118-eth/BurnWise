@@ -18,7 +18,12 @@ import (
 func TestExportService_ExportTransactionsCSV(t *testing.T) {
 	db := test.SetupTestDB(t)
 	txRepo := repository.NewTransactionRepository(db)
-	currencyService := NewCurrencyService()
+	
+	tempDir := t.TempDir()
+	settingsService, err := NewSettingsService(tempDir)
+	require.NoError(t, err)
+	currencyService := NewCurrencyService(settingsService)
+	
 	txService := NewTransactionService(txRepo, currencyService)
 	exportService := NewExportService(txService)
 	
@@ -47,7 +52,7 @@ func TestExportService_ExportTransactionsCSV(t *testing.T) {
 	
 	// Export to buffer
 	var buf bytes.Buffer
-	err := exportService.ExportTransactionsCSV(&buf, &models.TransactionFilter{})
+	err = exportService.ExportTransactionsCSV(&buf, &models.TransactionFilter{})
 	require.NoError(t, err)
 	
 	// Parse CSV
@@ -84,7 +89,12 @@ func TestExportService_ExportTransactionsCSV(t *testing.T) {
 func TestExportService_ExportMonthlyReportCSV(t *testing.T) {
 	db := test.SetupTestDB(t)
 	txRepo := repository.NewTransactionRepository(db)
-	currencyService := NewCurrencyService()
+	
+	tempDir := t.TempDir()
+	settingsService, err := NewSettingsService(tempDir)
+	require.NoError(t, err)
+	currencyService := NewCurrencyService(settingsService)
+	
 	txService := NewTransactionService(txRepo, currencyService)
 	exportService := NewExportService(txService)
 	
@@ -116,7 +126,7 @@ func TestExportService_ExportMonthlyReportCSV(t *testing.T) {
 	
 	// Export report
 	var buf bytes.Buffer
-	err := exportService.ExportMonthlyReportCSV(&buf, time.Now().Year(), time.Now().Month())
+	err = exportService.ExportMonthlyReportCSV(&buf, time.Now().Year(), time.Now().Month())
 	require.NoError(t, err)
 	
 	// Check output contains expected data
@@ -134,7 +144,12 @@ func TestExportService_ExportBudgetStatusCSV(t *testing.T) {
 	db := test.SetupTestDB(t)
 	budgetRepo := repository.NewBudgetRepository(db)
 	txRepo := repository.NewTransactionRepository(db)
-	currencyService := NewCurrencyService()
+	
+	tempDir := t.TempDir()
+	settingsService, err := NewSettingsService(tempDir)
+	require.NoError(t, err)
+	currencyService := NewCurrencyService(settingsService)
+	
 	txService := NewTransactionService(txRepo, currencyService)
 	budgetService := NewBudgetService(budgetRepo, txRepo)
 	exportService := NewExportService(txService)
@@ -156,7 +171,7 @@ func TestExportService_ExportBudgetStatusCSV(t *testing.T) {
 	
 	// Export budget status
 	var buf bytes.Buffer
-	err := exportService.ExportBudgetStatusCSV(&buf, budgetService)
+	err = exportService.ExportBudgetStatusCSV(&buf, budgetService)
 	require.NoError(t, err)
 	
 	// Parse CSV

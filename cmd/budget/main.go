@@ -40,16 +40,22 @@ func main() {
 	}
 	defer sqlDB.Close()
 
+	// Initialize settings service
+	settingsService, err := service.NewSettingsService("data")
+	if err != nil {
+		log.Fatalf("Failed to initialize settings: %v", err)
+	}
+
 	txRepo := repository.NewTransactionRepository(database)
 	categoryRepo := repository.NewCategoryRepository(database)
 	budgetRepo := repository.NewBudgetRepository(database)
 
-	currencyService := service.NewCurrencyService()
+	currencyService := service.NewCurrencyService(settingsService)
 	txService := service.NewTransactionService(txRepo, currencyService)
 	categoryService := service.NewCategoryService(categoryRepo)
 	budgetService := service.NewBudgetService(budgetRepo, txRepo)
 
-	app := ui.NewApp(txService, categoryService, budgetService, currencyService)
+	app := ui.NewApp(txService, categoryService, budgetService, currencyService, settingsService)
 
 	p := tea.NewProgram(app, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
@@ -70,11 +76,17 @@ func handleExport(exportType, outputFile string, month, year int) {
 	}
 	defer sqlDB.Close()
 
+	// Initialize settings service
+	settingsService, err := service.NewSettingsService("data")
+	if err != nil {
+		log.Fatalf("Failed to initialize settings: %v", err)
+	}
+
 	// Initialize services
 	txRepo := repository.NewTransactionRepository(database)
 	budgetRepo := repository.NewBudgetRepository(database)
 	
-	currencyService := service.NewCurrencyService()
+	currencyService := service.NewCurrencyService(settingsService)
 	txService := service.NewTransactionService(txRepo, currencyService)
 	budgetService := service.NewBudgetService(budgetRepo, txRepo)
 	exportService := service.NewExportService(txService)

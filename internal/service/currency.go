@@ -8,10 +8,6 @@ import (
 	"time"
 )
 
-var fixedRates = map[string]float64{
-	"AED": 3.6725,
-}
-
 type exchangeRateResponse struct {
 	Result             string             `json:"result"`
 	ConversionRates    map[string]float64 `json:"conversion_rates"`
@@ -19,9 +15,10 @@ type exchangeRateResponse struct {
 }
 
 type CurrencyService struct {
-	cache     map[string]*rateCache
-	cacheMutex sync.RWMutex
-	apiKey    string
+	cache          map[string]*rateCache
+	cacheMutex     sync.RWMutex
+	apiKey         string
+	settingsService *SettingsService
 }
 
 type rateCache struct {
@@ -29,10 +26,11 @@ type rateCache struct {
 	timestamp time.Time
 }
 
-func NewCurrencyService() *CurrencyService {
+func NewCurrencyService(settingsService *SettingsService) *CurrencyService {
 	return &CurrencyService{
-		cache:  make(map[string]*rateCache),
-		apiKey: "free", // Using free tier
+		cache:           make(map[string]*rateCache),
+		apiKey:          "free", // Using free tier
+		settingsService: settingsService,
 	}
 }
 
@@ -63,7 +61,8 @@ func (s *CurrencyService) ConvertFromUSD(amount float64, currency string) (float
 }
 
 func (s *CurrencyService) GetExchangeRate(currency string) (float64, error) {
-	if rate, ok := fixedRates[currency]; ok {
+	// Check for fixed rates in settings
+	if rate, exists := s.settingsService.GetFixedRate(currency); exists {
 		return rate, nil
 	}
 
@@ -122,17 +121,20 @@ func (s *CurrencyService) fetchExchangeRate(currency string) (float64, error) {
 }
 
 func (s *CurrencyService) GetSupportedCurrencies() []string {
-	return []string{
-		"USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "NZD", "AED",
-	}
+	return s.settingsService.GetEnabledCurrencies()
 }
 
 func (s *CurrencyService) IsSupported(currency string) bool {
-	supported := s.GetSupportedCurrencies()
-	for _, c := range supported {
-		if c == currency {
-			return true
-		}
+	return s.settingsService.IsCurrencyEnabled(currency)
+}
+
+// GetAllAvailableCurrencies returns all currencies that can be enabled
+func (s *CurrencyService) GetAllAvailableCurrencies() []string {
+	return []string{
+		"USD", "EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "NZD", 
+		"AED", "CNY", "INR", "KRW", "SGD", "HKD", "NOK", "SEK",
+		"DKK", "PLN", "CZK", "HUF", "RON", "BGN", "HRK", "RUB",
+		"TRY", "BRL", "MXN", "ARS", "CLP", "COP", "PEN", "UYU",
+		"ZAR", "THB", "MYR", "IDR", "PHP", "VND",
 	}
-	return false
 }

@@ -20,6 +20,7 @@ const (
 	viewBudgetForm
 	viewReports
 	viewCategories
+	viewCurrencySettings
 )
 
 type App struct {
@@ -31,13 +32,15 @@ type App struct {
 	categoryService *service.CategoryService
 	budgetService   *service.BudgetService
 	currencyService *service.CurrencyService
+	settingsService *service.SettingsService
 	
-	dashboard       *views.Dashboard
-	transactionList *views.TransactionList
-	transactionForm *views.TransactionForm
-	budgetList      *views.BudgetList
-	budgetForm      *views.BudgetForm
-	reports         *views.Reports
+	dashboard        *views.Dashboard
+	transactionList  *views.TransactionList
+	transactionForm  *views.TransactionForm
+	budgetList       *views.BudgetList
+	budgetForm       *views.BudgetForm
+	reports          *views.Reports
+	currencySettings *views.CurrencySettings
 	
 	err             error
 }
@@ -47,6 +50,7 @@ func NewApp(
 	categoryService *service.CategoryService,
 	budgetService *service.BudgetService,
 	currencyService *service.CurrencyService,
+	settingsService *service.SettingsService,
 ) *App {
 	return &App{
 		currentView:     viewDashboard,
@@ -54,6 +58,7 @@ func NewApp(
 		categoryService: categoryService,
 		budgetService:   budgetService,
 		currencyService: currencyService,
+		settingsService: settingsService,
 	}
 }
 
@@ -64,6 +69,7 @@ func (a *App) Init() tea.Cmd {
 	a.budgetList = views.NewBudgetList(a.budgetService, a.categoryService)
 	a.budgetForm = views.NewBudgetForm(a.budgetService, a.categoryService)
 	a.reports = views.NewReports(a.txService, a.categoryService, a.budgetService)
+	a.currencySettings = views.NewCurrencySettings(a.settingsService, a.currencyService, a.txService)
 	
 	return tea.Batch(
 		a.dashboard.Init(),
@@ -106,6 +112,9 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "r":
 				a.currentView = viewReports
 				return a, a.reports.Init()
+			case "u":
+				a.currentView = viewCurrencySettings
+				return a, a.currencySettings.Init()
 			case "esc":
 				a.currentView = viewDashboard
 				return a, a.dashboard.Init()
@@ -142,6 +151,10 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		a.currentView = viewBudgetForm
 		a.budgetForm.SetBudget(msg.Budget)
 		return a, a.budgetForm.Init()
+		
+	case views.BackToDashboardMsg:
+		a.currentView = viewDashboard
+		return a, a.dashboard.Init()
 	}
 
 	switch a.currentView {
@@ -157,6 +170,8 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		a.budgetForm, cmd = a.budgetForm.Update(msg)
 	case viewReports:
 		a.reports, cmd = a.reports.Update(msg)
+	case viewCurrencySettings:
+		a.currencySettings, cmd = a.currencySettings.Update(msg)
 	}
 
 	cmds = append(cmds, cmd)
@@ -183,6 +198,8 @@ func (a *App) View() string {
 		content = a.budgetForm.View()
 	case viewReports:
 		content = a.reports.View()
+	case viewCurrencySettings:
+		content = a.currencySettings.View()
 	}
 
 	if a.err != nil {
@@ -214,5 +231,8 @@ func (a *App) updateViewSizes() {
 	}
 	if a.reports != nil {
 		a.reports.SetSize(a.width, a.height)
+	}
+	if a.currencySettings != nil {
+		a.currencySettings, _ = a.currencySettings.Update(tea.WindowSizeMsg{Width: a.width, Height: a.height})
 	}
 }

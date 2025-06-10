@@ -127,3 +127,7 @@ func (s *TransactionService) ImportTransactions(transactions []*models.Transacti
 	}
 	return nil
 }
+
+func (s *TransactionService) CountByCurrency(currency string) (int64, error) {
+	return s.repo.CountByCurrency(currency)
+}

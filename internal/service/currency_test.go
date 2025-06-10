@@ -8,7 +8,10 @@ import (
 )
 
 func TestCurrencyService_FixedRate(t *testing.T) {
-	service := NewCurrencyService()
+	tempDir := t.TempDir()
+	settingsService, err := NewSettingsService(tempDir)
+	require.NoError(t, err)
+	service := NewCurrencyService(settingsService)
 	
 	// Test AED to USD (fixed rate)
 	usdAmount, err := service.ConvertToUSD(100.00, "AED")
@@ -22,7 +25,10 @@ func TestCurrencyService_FixedRate(t *testing.T) {
 }
 
 func TestCurrencyService_USDConversion(t *testing.T) {
-	service := NewCurrencyService()
+	tempDir := t.TempDir()
+	settingsService, err := NewSettingsService(tempDir)
+	require.NoError(t, err)
+	service := NewCurrencyService(settingsService)
 	
 	// Test USD to USD (should return same amount)
 	amount, err := service.ConvertToUSD(100.00, "USD")
@@ -35,7 +41,10 @@ func TestCurrencyService_USDConversion(t *testing.T) {
 }
 
 func TestCurrencyService_SupportedCurrencies(t *testing.T) {
-	service := NewCurrencyService()
+	tempDir := t.TempDir()
+	settingsService, err := NewSettingsService(tempDir)
+	require.NoError(t, err)
+	service := NewCurrencyService(settingsService)
 	
 	supported := service.GetSupportedCurrencies()
 	assert.Contains(t, supported, "USD")
