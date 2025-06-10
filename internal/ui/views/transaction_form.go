@@ -22,6 +22,7 @@ type TransactionForm struct {
 	categoryService *service.CategoryService
 	currencyService *service.CurrencyService
 	
+	editingTx       *models.Transaction
 	txType          models.TransactionType
 	amount          textinput.Model
 	currency        string
@@ -87,8 +88,10 @@ func (f *TransactionForm) Update(msg tea.Msg) (*TransactionForm, tea.Cmd) {
 		case "tab", "shift+tab":
 			f.nextFocus(msg.String() == "shift+tab")
 		case "enter":
-			if f.focusIndex == 5 { // Save button
+			if f.focusIndex == 6 { // Save button
 				return f, f.save
+			} else if f.focusIndex == 7 { // Cancel button
+				return f, func() tea.Msg { return TransactionCancelledMsg{} }
 			}
 		case "t":
 			if f.focusIndex == 0 { // Type field
@@ -137,7 +140,11 @@ func (f *TransactionForm) Update(msg tea.Msg) (*TransactionForm, tea.Cmd) {
 }
 
 func (f *TransactionForm) View() string {
-	title := styles.TitleStyle.Render("Add Transaction")
+	title := "Add Transaction"
+	if f.editingTx != nil {
+		title = "Edit Transaction"
+	}
+	title = styles.TitleStyle.Render(title)
 	
 	typeLabel := styles.FormLabelStyle.Render("Type:")
 	typeValue := lipgloss.NewStyle().
@@ -243,12 +250,25 @@ func (f *TransactionForm) SetSize(width, height int) {
 }
 
 func (f *TransactionForm) Reset() {
+	f.editingTx = nil
 	f.txType = models.TransactionTypeExpense
 	f.amount.SetValue("")
 	f.currency = "USD"
 	f.categoryID = 0
 	f.description.SetValue("")
 	f.date.SetValue(time.Now().Format("2006-01-02"))
+	f.focusIndex = 0
+	f.err = nil
+}
+
+func (f *TransactionForm) SetTransaction(tx *models.Transaction) {
+	f.editingTx = tx
+	f.txType = tx.Type
+	f.amount.SetValue(fmt.Sprintf("%.2f", tx.Amount))
+	f.currency = tx.Currency
+	f.categoryID = tx.CategoryID
+	f.description.SetValue(tx.Description)
+	f.date.SetValue(tx.Date.Format("2006-01-02"))
 	f.focusIndex = 0
 	f.err = nil
 }
@@ -328,18 +348,34 @@ func (f *TransactionForm) save() tea.Msg {
 		return nil
 	}
 	
-	tx := &models.Transaction{
-		Type:        f.txType,
-		Amount:      amount,
-		Currency:    f.currency,
-		CategoryID:  f.categoryID,
-		Description: f.description.Value(),
-		Date:        date,
-	}
-	
-	if err := f.txService.Create(tx); err != nil {
-		f.err = err
-		return nil
+	if f.editingTx != nil {
+		// Update existing transaction
+		f.editingTx.Type = f.txType
+		f.editingTx.Amount = amount
+		f.editingTx.Currency = f.currency
+		f.editingTx.CategoryID = f.categoryID
+		f.editingTx.Description = f.description.Value()
+		f.editingTx.Date = date
+		
+		if err := f.txService.Update(f.editingTx); err != nil {
+			f.err = err
+			return nil
+		}
+	} else {
+		// Create new transaction
+		tx := &models.Transaction{
+			Type:        f.txType,
+			Amount:      amount,
+			Currency:    f.currency,
+			CategoryID:  f.categoryID,
+			Description: f.description.Value(),
+			Date:        date,
+		}
+		
+		if err := f.txService.Create(tx); err != nil {
+			f.err = err
+			return nil
+		}
 	}
 	
 	return TransactionSavedMsg{}

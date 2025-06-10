@@ -75,6 +75,10 @@ var (
 		Foreground(Success).
 		Bold(true)
 	
+	WarningStyle = lipgloss.NewStyle().
+		Foreground(Warning).
+		Bold(true)
+	
 	HelpStyle = lipgloss.NewStyle().
 		Foreground(Muted).
 		Italic(true)

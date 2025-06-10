@@ -125,6 +125,11 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return a, a.dashboard.Init()
 		}
 		
+	case views.TransactionEditMsg:
+		a.currentView = viewTransactionForm
+		a.transactionForm.SetTransaction(msg.Transaction)
+		return a, a.transactionForm.Init()
+		
 	case views.BudgetSavedMsg:
 		a.currentView = viewBudgets
 		return a, a.budgetList.Init()
@@ -132,6 +137,11 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case views.BudgetCancelledMsg:
 		a.currentView = viewBudgets
 		return a, a.budgetList.Init()
+		
+	case views.BudgetEditMsg:
+		a.currentView = viewBudgetForm
+		a.budgetForm.SetBudget(msg.Budget)
+		return a, a.budgetForm.Init()
 	}
 
 	switch a.currentView {
