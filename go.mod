@@ -1,4 +1,4 @@
-module budget-tracker
+module burnwise
 
 go 1.24
 

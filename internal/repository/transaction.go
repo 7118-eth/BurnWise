@@ -6,7 +6,7 @@ import (
 
 	"gorm.io/gorm"
 
-	"budget-tracker/internal/models"
+	"burnwise/internal/models"
 )
 
 type TransactionRepository struct {

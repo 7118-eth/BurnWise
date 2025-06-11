@@ -7,9 +7,9 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 
-	"budget-tracker/internal/models"
-	"budget-tracker/internal/service"
-	"budget-tracker/internal/ui/styles"
+	"burnwise/internal/models"
+	"burnwise/internal/service"
+	"burnwise/internal/ui/styles"
 )
 
 type CategoryEditModel struct {

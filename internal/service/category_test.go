@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"budget-tracker/internal/models"
-	"budget-tracker/internal/repository"
-	test "budget-tracker/test/helpers"
+	"burnwise/internal/models"
+	"burnwise/internal/repository"
+	test "burnwise/test/helpers"
 )
 
 func TestCategoryService_Create(t *testing.T) {

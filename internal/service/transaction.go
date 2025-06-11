@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"budget-tracker/internal/models"
-	"budget-tracker/internal/repository"
+	"burnwise/internal/models"
+	"burnwise/internal/repository"
 )
 
 type TransactionService struct {

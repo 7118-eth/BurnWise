@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
-	"budget-tracker/internal/models"
+	"burnwise/internal/models"
 )
 
 func SetupTestDB(t *testing.T) *gorm.DB {

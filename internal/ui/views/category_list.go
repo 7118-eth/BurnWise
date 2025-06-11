@@ -10,9 +10,9 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"budget-tracker/internal/models"
-	"budget-tracker/internal/service"
-	"budget-tracker/internal/ui/styles"
+	"burnwise/internal/models"
+	"burnwise/internal/service"
+	"burnwise/internal/ui/styles"
 )
 
 type categoryListMode int

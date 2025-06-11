@@ -9,11 +9,11 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 
-	"budget-tracker/internal/db"
-	"budget-tracker/internal/models"
-	"budget-tracker/internal/repository"
-	"budget-tracker/internal/service"
-	"budget-tracker/internal/ui"
+	"burnwise/internal/db"
+	"burnwise/internal/models"
+	"burnwise/internal/repository"
+	"burnwise/internal/service"
+	"burnwise/internal/ui"
 )
 
 func main() {

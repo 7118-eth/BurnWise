@@ -9,8 +9,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"budget-tracker/internal/service"
-	"budget-tracker/internal/ui/styles"
+	"burnwise/internal/service"
+	"burnwise/internal/ui/styles"
 )
 
 type currencyItem struct {

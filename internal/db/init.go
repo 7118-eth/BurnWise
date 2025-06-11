@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
-	"budget-tracker/internal/models"
+	"burnwise/internal/models"
 )
 
 func InitDB(dbPath string) (*gorm.DB, error) {

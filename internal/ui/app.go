@@ -6,8 +6,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"budget-tracker/internal/service"
-	"budget-tracker/internal/ui/views"
+	"burnwise/internal/service"
+	"burnwise/internal/ui/views"
 )
 
 type view int

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"budget-tracker/internal/models"
+	"burnwise/internal/models"
 )
 
 // SettingsService manages application settings
