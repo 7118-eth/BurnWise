@@ -1,5 +1,9 @@
 # Budget Tracker - Feature Documentation
 
+## Project Focus: Monthly Burn Rate Tracking
+
+The Budget Tracker is primarily designed to help users monitor their monthly burn rate by providing clear visibility into recurring expenses and one-time transactions. The dashboard emphasizes expense tracking and projections based on recurring commitments.
+
 ## Completed Features
 
 ### 1. Transaction Management
@@ -54,7 +58,7 @@
 - **Help System**: Built-in keyboard shortcuts help
 - **Responsive Layout**: Adapts to terminal size
 
-### 7. Category Management ✅ NEW
+### 7. Category Management ✅
 - **Edit Categories**: Modify name, icon, and color of custom categories
 - **Merge Categories**: Combine categories with atomic transaction migration
 - **Create Custom**: Add new categories with custom properties
@@ -64,16 +68,17 @@
 - **Type Safety**: Enforces category type consistency
 - **UI Navigation**: Accessible via 'c' key from dashboard
 
-## In-Progress Features
-
-### Recurring Transactions (Phase 3)
-**Status**: Model designed, not implemented
-
-- **Frequency Options**: Daily, weekly, monthly, yearly
-- **Auto-Generation**: Create transactions automatically
-- **Manual Override**: Skip or edit individual occurrences
+### 8. Recurring Transactions ✅
+- **Frequency Options**: Daily, weekly, monthly, yearly with custom intervals
+- **Auto-Generation**: Creates transactions automatically when due
+- **Manual Override**: Skip or modify individual occurrences
+- **Pause/Resume**: Temporarily suspend recurring expenses
 - **End Date Support**: Optional termination date
-- **Smart Detection**: Identify recurring patterns
+- **History Tracking**: Complete audit trail of skips/modifications
+- **UI Management**: Accessible via 's' key from dashboard
+- **Startup Processing**: Automatic processing of due transactions
+
+## In-Progress Features
 
 ### Financial Projections (Phase 4)
 **Status**: Algorithm designed, not implemented
@@ -157,6 +162,7 @@
 - `b` - Manage budgets
 - `r` - View reports
 - `c` - Manage categories
+- `s` - Manage recurring expenses
 - `u` - Currency settings
 
 ### Lists

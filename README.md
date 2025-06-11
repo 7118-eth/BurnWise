@@ -1,19 +1,21 @@
-# Budget Tracker
+# Budget Tracker - Burn Rate Monitor
 
-A fast, keyboard-driven terminal application for personal finance management built with Go.
+A fast, keyboard-driven terminal application for tracking expenses and monitoring monthly burn rate, built with Go.
 
 ## Features
 
+- 🔥 **Monthly Burn Rate** - Track your total monthly expenses at a glance
+- 🔄 **Recurring Expense Management** - Monitor and project recurring expenses
 - 💰 **Income & Expense Tracking** - Record all your financial transactions
+- 📊 **Expense Breakdown** - Separate view for recurring vs one-time expenses
 - 🌍 **Multi-Currency Support** - Track expenses in multiple currencies with automatic conversion
 - 🔧 **Configurable Currencies** - Enable/disable currencies based on your needs
 - 📊 **Budget Management** - Set monthly/yearly budgets and track progress
-- 📈 **Financial Reports** - View spending trends and category breakdowns
+- 📈 **Financial Reports** - View spending trends and projections
 - ⌨️ **Keyboard-First Design** - Navigate entirely with keyboard shortcuts
 - 🎨 **Category Management** - Create, edit, and merge custom categories
 - 🔍 **Smart Search** - Filter transactions by date, category, or amount
 - 📁 **Data Export** - Export your data to CSV for external analysis
-- ⚙️ **Settings Management** - JSON-based configuration with currency preferences
 
 ## Installation
 
@@ -52,6 +54,12 @@ make install  # Installs to $GOPATH/bin
 ```
 💰 Budget Tracker                                    October 2025
 
+━━━ MONTHLY BURN RATE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Recurring:   $2,450 (8 active)
+One-time:    $1,050
+Total Burn:  $3,500
+
+━━━ INCOME & EXPENSES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Income:    $5,000.00    ████████████████████ 100%
 Expenses:  $3,500.00    ██████████████       70%
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -64,7 +72,7 @@ Date        Category        Description          Amount
 10/15       💼 Salary      Monthly salary     +$5,000.00
 10/14       🏠 Rent        October rent       -$1,500.00
 
-[n]ew  [t]ransactions  [b]udgets  [r]eports  c[u]rrencies  [q]uit
+[n]ew  [t]ransactions  [b]udgets  [r]eports  [c]ategories  [s] Recurring  c[u]rrencies  [q]uit
 ```
 
 ### Keyboard Shortcuts
@@ -88,6 +96,7 @@ Date        Category        Description          Amount
 - `b` - Manage budgets
 - `r` - View reports
 - `c` - Manage categories
+- `s` - Manage recurring expenses
 - `u` - Currency settings
 - `e` - Edit selected item
 - `d` - Delete selected item (with confirmation)
@@ -103,6 +112,15 @@ Date        Category        Description          Amount
    - Category: Choose appropriate category
    - Description: Brief note about the transaction
    - Date: Defaults to today, can be changed
+
+### Managing Recurring Expenses
+
+1. Press `s` from the main screen to view all recurring expenses
+2. Press `n` to create a new recurring expense
+3. Set frequency (daily, weekly, monthly, yearly)
+4. The system automatically generates transactions when due
+5. You can skip or modify individual occurrences
+6. Pause/resume recurring expenses as needed
 
 ### Managing Budgets
 

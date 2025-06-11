@@ -285,7 +285,7 @@ func (d *Dashboard) renderHelp() string {
 		"[b]udgets",
 		"[r]eports",
 		"[c]ategories",
-		"[s]ubscriptions",
+		"[s] Recurring",
 		"c[u]rrencies",
 		"[q]uit",
 	}

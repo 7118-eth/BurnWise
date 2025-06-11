@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is a terminal-based personal finance tool built with Go, designed for fast keyboard-driven interaction. The application provides comprehensive budget tracking with multi-currency support and real-time financial insights.
+This is a terminal-based expense tracking tool built with Go, designed for monitoring monthly burn rate and managing recurring expenses. The application provides comprehensive expense tracking with multi-currency support, focusing on giving users clear visibility into their monthly spending patterns and recurring commitments.
 
 ## Architecture
 
@@ -29,19 +29,25 @@ budget-tracker/
 
 ## Key Design Decisions
 
-### 1. Real Database Testing
+### 1. Burn Rate Focus
+- Dashboard prominently displays monthly burn rate
+- Separate tracking for recurring vs one-time expenses
+- Clear monthly and yearly projections based on recurring expenses
+- Quick access to recurring expense management
+
+### 2. Real Database Testing
 - Each test uses its own SQLite database file
 - No mocks - tests verify actual functionality
 - Automatic cleanup after tests
 - Skip API tests with `-short` flag
 
-### 2. Multi-Currency Architecture
+### 3. Multi-Currency Architecture
 - All amounts stored in original currency
 - USD as base currency for aggregation
 - Exchange rates cached for 1 hour
 - Fixed rates for pegged currencies (AED)
 
-### 3. Keyboard-First UI
+### 4. Keyboard-First UI
 - Single-key shortcuts for all major actions
 - Modal dialogs for data entry
 - Vim-like navigation (j/k for up/down)
@@ -85,7 +91,7 @@ budget-tracker/
 - `b` - Manage budgets
 - `r` - View reports
 - `c` - Manage categories
-- `s` - Recurring transactions
+- `s` - Recurring expenses
 - `u` - Currency settings
 
 ### List Views
@@ -280,7 +286,7 @@ const (
 - **UI Management**: List, create, edit, pause recurring transactions
 - **Smart Detection**: Suggest recurring patterns from transaction history
 
-### 4. Yearly Projections
+### 4. Yearly Projections (Based on Recurring Expenses)
 
 **Projection Algorithm**:
 1. Calculate average monthly expenses from last 3-6 months
