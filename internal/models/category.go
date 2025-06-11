@@ -51,15 +51,22 @@ var DefaultIncomeCategories = []Category{
 }
 
 var DefaultExpenseCategories = []Category{
+	// Housing & Living
 	{Name: "Housing", Icon: "🏠", Type: TransactionTypeExpense, IsDefault: true, Color: "#FF5722"},
-	{Name: "Food & Dining", Icon: "🍔", Type: TransactionTypeExpense, IsDefault: true, Color: "#FF9800"},
-	{Name: "Transportation", Icon: "🚗", Type: TransactionTypeExpense, IsDefault: true, Color: "#FFC107"},
-	{Name: "Shopping", Icon: "🛒", Type: TransactionTypeExpense, IsDefault: true, Color: "#FFEB3B"},
-	{Name: "Entertainment", Icon: "🎮", Type: TransactionTypeExpense, IsDefault: true, Color: "#CDDC39"},
-	{Name: "Healthcare", Icon: "💊", Type: TransactionTypeExpense, IsDefault: true, Color: "#8BC34A"},
-	{Name: "Education", Icon: "📚", Type: TransactionTypeExpense, IsDefault: true, Color: "#03A9F4"},
-	{Name: "Utilities", Icon: "💡", Type: TransactionTypeExpense, IsDefault: true, Color: "#00BCD4"},
-	{Name: "Other Expenses", Icon: "💸", Type: TransactionTypeExpense, IsDefault: true, Color: "#009688"},
+	{Name: "Utilities", Icon: "💡", Type: TransactionTypeExpense, IsDefault: true, Color: "#FF9800"},
+	{Name: "Living", Icon: "🛒", Type: TransactionTypeExpense, IsDefault: true, Color: "#FFC107"},
+	{Name: "Transportation", Icon: "🚗", Type: TransactionTypeExpense, IsDefault: true, Color: "#FFEB3B"},
+	
+	// Business & Technology
+	{Name: "Technology", Icon: "💻", Type: TransactionTypeExpense, IsDefault: true, Color: "#2196F3"},
+	{Name: "AI Tools", Icon: "🤖", Type: TransactionTypeExpense, IsDefault: true, Color: "#9C27B0"},
+	{Name: "Cloud Services", Icon: "☁️", Type: TransactionTypeExpense, IsDefault: true, Color: "#3F51B5"},
+	{Name: "Business", Icon: "💼", Type: TransactionTypeExpense, IsDefault: true, Color: "#00BCD4"},
+	
+	// Personal
+	{Name: "Healthcare", Icon: "💊", Type: TransactionTypeExpense, IsDefault: true, Color: "#4CAF50"},
+	{Name: "Personal", Icon: "👤", Type: TransactionTypeExpense, IsDefault: true, Color: "#009688"},
+	{Name: "Other", Icon: "💸", Type: TransactionTypeExpense, IsDefault: true, Color: "#607D8B"},
 }
 
 func GetDefaultCategories() []Category {
