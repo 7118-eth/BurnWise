@@ -69,7 +69,7 @@ func NewRecurringFormModel(
 
 	// Create input fields
 	descriptionInput := textinput.New()
-	descriptionInput.Placeholder = "Rent, Netflix subscription, etc."
+	descriptionInput.Placeholder = "Rent, AI Tools, Cloud Services, etc."
 	descriptionInput.Focus()
 	descriptionInput.CharLimit = 255
 	descriptionInput.Width = 50

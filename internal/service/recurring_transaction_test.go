@@ -125,7 +125,7 @@ func TestRecurringTransactionService_SkipOccurrence(t *testing.T) {
 		Amount:         9.99,
 		Currency:       "USD",
 		CategoryID:     category.ID,
-		Description:    "Netflix subscription",
+		Description:    "Cloud hosting service",
 		Frequency:      models.FrequencyMonthly,
 		FrequencyValue: 1,
 		StartDate:      today,
