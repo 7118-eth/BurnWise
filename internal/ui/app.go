@@ -20,6 +20,8 @@ const (
 	viewBudgetForm
 	viewReports
 	viewCategories
+	viewRecurring
+	viewRecurringForm
 	viewCurrencySettings
 )
 
@@ -28,11 +30,12 @@ type App struct {
 	width           int
 	height          int
 	
-	txService       *service.TransactionService
-	categoryService *service.CategoryService
-	budgetService   *service.BudgetService
-	currencyService *service.CurrencyService
-	settingsService *service.SettingsService
+	txService              *service.TransactionService
+	categoryService        *service.CategoryService
+	budgetService          *service.BudgetService
+	currencyService        *service.CurrencyService
+	settingsService        *service.SettingsService
+	recurringService       *service.RecurringTransactionService
 	
 	dashboard        *views.Dashboard
 	transactionList  *views.TransactionList
@@ -41,6 +44,8 @@ type App struct {
 	budgetForm       *views.BudgetForm
 	reports          *views.Reports
 	categoryList     *views.CategoryListModel
+	recurringList    *views.RecurringListModel
+	recurringForm    *views.RecurringFormModel
 	currencySettings *views.CurrencySettings
 	
 	err             error
@@ -52,14 +57,16 @@ func NewApp(
 	budgetService *service.BudgetService,
 	currencyService *service.CurrencyService,
 	settingsService *service.SettingsService,
+	recurringService *service.RecurringTransactionService,
 ) *App {
 	return &App{
-		currentView:     viewDashboard,
-		txService:       txService,
-		categoryService: categoryService,
-		budgetService:   budgetService,
-		currencyService: currencyService,
-		settingsService: settingsService,
+		currentView:      viewDashboard,
+		txService:        txService,
+		categoryService:  categoryService,
+		budgetService:    budgetService,
+		currencyService:  currencyService,
+		settingsService:  settingsService,
+		recurringService: recurringService,
 	}
 }
 
@@ -71,6 +78,7 @@ func (a *App) Init() tea.Cmd {
 	a.budgetForm = views.NewBudgetForm(a.budgetService, a.categoryService)
 	a.reports = views.NewReports(a.txService, a.categoryService, a.budgetService)
 	a.categoryList = views.NewCategoryListModel(a.categoryService)
+	a.recurringList = views.NewRecurringListModel(a.recurringService, a.categoryService)
 	a.currencySettings = views.NewCurrencySettings(a.settingsService, a.currencyService, a.txService)
 	
 	return tea.Batch(
@@ -91,7 +99,8 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		if a.currentView == viewDashboard || a.currentView == viewTransactions || 
-		   a.currentView == viewBudgets || a.currentView == viewReports || a.currentView == viewCategories {
+		   a.currentView == viewBudgets || a.currentView == viewReports || 
+		   a.currentView == viewCategories || a.currentView == viewRecurring {
 			switch msg.String() {
 			case "q", "ctrl+c":
 				return a, tea.Quit
@@ -104,6 +113,10 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					a.currentView = viewBudgetForm
 					a.budgetForm.Reset()
 					return a, a.budgetForm.Init()
+				} else if a.currentView == viewRecurring {
+					a.currentView = viewRecurringForm
+					a.recurringForm = views.NewRecurringFormModel(a.recurringService, a.categoryService, nil)
+					return a, a.recurringForm.Init()
 				}
 			case "t":
 				a.currentView = viewTransactions
@@ -120,6 +133,9 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "u":
 				a.currentView = viewCurrencySettings
 				return a, a.currencySettings.Init()
+			case "s":
+				a.currentView = viewRecurring
+				return a, a.recurringList.Init()
 			case "esc":
 				a.currentView = viewDashboard
 				return a, a.dashboard.Init()
@@ -179,6 +195,26 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var model tea.Model
 		model, cmd = a.categoryList.Update(msg)
 		a.categoryList = model.(*views.CategoryListModel)
+	case viewRecurring:
+		var model tea.Model
+		model, cmd = a.recurringList.Update(msg)
+		a.recurringList = model.(*views.RecurringListModel)
+		// Handle navigation back to dashboard on ESC/Q
+		if msg, ok := msg.(tea.KeyMsg); ok && (msg.String() == "esc" || msg.String() == "q") {
+			a.currentView = viewDashboard
+			return a, a.dashboard.Init()
+		}
+	case viewRecurringForm:
+		if a.recurringForm != nil {
+			var model tea.Model
+			model, cmd = a.recurringForm.Update(msg)
+			a.recurringForm = model.(*views.RecurringFormModel)
+			
+			if a.recurringForm.IsCompleted() || a.recurringForm.IsCancelled() {
+				a.currentView = viewRecurring
+				return a, a.recurringList.Init()
+			}
+		}
 	case viewCurrencySettings:
 		a.currencySettings, cmd = a.currencySettings.Update(msg)
 	}
@@ -209,6 +245,12 @@ func (a *App) View() string {
 		content = a.reports.View()
 	case viewCategories:
 		content = a.categoryList.View()
+	case viewRecurring:
+		content = a.recurringList.View()
+	case viewRecurringForm:
+		if a.recurringForm != nil {
+			content = a.recurringForm.View()
+		}
 	case viewCurrencySettings:
 		content = a.currencySettings.View()
 	}
@@ -246,6 +288,10 @@ func (a *App) updateViewSizes() {
 	if a.categoryList != nil {
 		model, _ := a.categoryList.Update(tea.WindowSizeMsg{Width: a.width, Height: a.height})
 		a.categoryList = model.(*views.CategoryListModel)
+	}
+	if a.recurringList != nil {
+		model, _ := a.recurringList.Update(tea.WindowSizeMsg{Width: a.width, Height: a.height})
+		a.recurringList = model.(*views.RecurringListModel)
 	}
 	if a.currencySettings != nil {
 		a.currencySettings, _ = a.currencySettings.Update(tea.WindowSizeMsg{Width: a.width, Height: a.height})

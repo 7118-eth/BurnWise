@@ -49,13 +49,20 @@ func main() {
 	txRepo := repository.NewTransactionRepository(database)
 	categoryRepo := repository.NewCategoryRepository(database)
 	budgetRepo := repository.NewBudgetRepository(database)
+	recurringRepo := repository.NewRecurringTransactionRepository(database)
 
 	currencyService := service.NewCurrencyService(settingsService)
 	txService := service.NewTransactionService(txRepo, currencyService)
 	categoryService := service.NewCategoryService(categoryRepo)
 	budgetService := service.NewBudgetService(budgetRepo, txRepo)
+	recurringService := service.NewRecurringTransactionService(recurringRepo, txRepo, currencyService)
 
-	app := ui.NewApp(txService, categoryService, budgetService, currencyService, settingsService)
+	// Process any due recurring transactions on startup
+	if _, err := recurringService.ProcessDueTransactions(time.Now()); err != nil {
+		log.Printf("Warning: Failed to process recurring transactions: %v", err)
+	}
+
+	app := ui.NewApp(txService, categoryService, budgetService, currencyService, settingsService, recurringService)
 
 	p := tea.NewProgram(app, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {

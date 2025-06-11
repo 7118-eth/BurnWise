@@ -284,6 +284,8 @@ func (d *Dashboard) renderHelp() string {
 		"[t]ransactions",
 		"[b]udgets",
 		"[r]eports",
+		"[c]ategories",
+		"[s]ubscriptions",
 		"c[u]rrencies",
 		"[q]uit",
 	}

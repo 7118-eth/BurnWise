@@ -16,19 +16,21 @@ const (
 )
 
 type Transaction struct {
-	ID          uint           `gorm:"primaryKey" json:"id"`
-	Type        TransactionType `gorm:"type:varchar(20);not null" json:"type"`
-	Amount      float64        `gorm:"not null" json:"amount"`
-	Currency    string         `gorm:"type:varchar(3);not null" json:"currency"`
-	AmountUSD   float64        `gorm:"not null" json:"amount_usd"`
-	CategoryID  uint           `gorm:"not null" json:"category_id"`
-	Description string         `gorm:"type:varchar(255)" json:"description"`
-	Date        time.Time      `gorm:"not null" json:"date"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
-	DeletedAt   gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
+	ID                     uint            `gorm:"primaryKey" json:"id"`
+	Type                   TransactionType `gorm:"type:varchar(20);not null" json:"type"`
+	Amount                 float64         `gorm:"not null" json:"amount"`
+	Currency               string          `gorm:"type:varchar(3);not null" json:"currency"`
+	AmountUSD              float64         `gorm:"not null" json:"amount_usd"`
+	CategoryID             uint            `gorm:"not null" json:"category_id"`
+	Description            string          `gorm:"type:varchar(255)" json:"description"`
+	Date                   time.Time       `gorm:"not null" json:"date"`
+	RecurringTransactionID *uint           `json:"recurring_transaction_id,omitempty"`
+	CreatedAt              time.Time       `json:"created_at"`
+	UpdatedAt              time.Time       `json:"updated_at"`
+	DeletedAt              gorm.DeletedAt  `gorm:"index" json:"deleted_at,omitempty"`
 
-	Category Category `gorm:"foreignKey:CategoryID" json:"category,omitempty"`
+	Category             Category              `gorm:"foreignKey:CategoryID" json:"category,omitempty"`
+	RecurringTransaction *RecurringTransaction `gorm:"foreignKey:RecurringTransactionID" json:"recurring_transaction,omitempty"`
 }
 
 func (t *Transaction) Validate() error {

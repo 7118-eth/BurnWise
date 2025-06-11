@@ -44,6 +44,8 @@ func runMigrations(db *gorm.DB) error {
 		&models.Category{},
 		&models.Budget{},
 		&models.CategoryHistory{},
+		&models.RecurringTransaction{},
+		&models.RecurringTransactionOccurrence{},
 	)
 }
 

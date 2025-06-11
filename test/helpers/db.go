@@ -35,6 +35,8 @@ func SetupTestDB(t *testing.T) *gorm.DB {
 		&models.Category{},
 		&models.Budget{},
 		&models.CategoryHistory{},
+		&models.RecurringTransaction{},
+		&models.RecurringTransactionOccurrence{},
 	)
 	require.NoError(t, err)
 
