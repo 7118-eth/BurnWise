@@ -3,6 +3,7 @@ package styles
 import (
 	"fmt"
 	"strings"
+	"time"
 	
 	"github.com/charmbracelet/lipgloss"
 )
@@ -17,6 +18,13 @@ var (
 	
 	Income    = lipgloss.Color("#4CAF50")
 	Expense   = lipgloss.Color("#F44336")
+	
+	// Color constants for easier access
+	PrimaryColor   = "#00BCD4"
+	SecondaryColor = "#FF5722"
+	
+	// Timeout for messages
+	MessageTimeout = 3 * time.Second
 	
 	TitleStyle = lipgloss.NewStyle().
 		Bold(true).
@@ -95,6 +103,24 @@ var (
 	
 	ProgressBarEmptyStyle = lipgloss.NewStyle().
 		Foreground(Muted)
+	
+	// Additional styles for category management
+	LabelStyle = lipgloss.NewStyle().
+		Bold(true).
+		Foreground(Primary)
+	
+	FocusedStyle = lipgloss.NewStyle().
+		Bold(true).
+		Foreground(Success)
+	
+	OptionStyle = lipgloss.NewStyle().
+		Foreground(Muted)
+	
+	ButtonFocusedStyle = ButtonStyle.Copy().
+		Background(Success)
+	
+	AppStyle = lipgloss.NewStyle().
+		Padding(1, 2)
 )
 
 func FormatAmount(amount float64, currency string) string {

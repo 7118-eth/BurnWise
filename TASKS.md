@@ -78,13 +78,15 @@
 - [x] Architecture planning for new features
 - [x] Settings service with JSON configuration
 - [x] Configurable currencies (enable/disable)
-- [ ] Editable categories with UI management
-- [ ] Category merge with transaction migration
+- [x] Editable categories with UI management
+- [x] Category merge with transaction migration
+- [x] Category history tracking and auditing
+- [x] Comprehensive tests for category management
 - [ ] Recurring transactions model and service
 - [ ] Recurring transaction UI
 - [ ] Yearly projections based on recurring expenses
 - [ ] Enhanced reports with projections
-- [ ] Comprehensive tests for new features
+- [ ] Tests for recurring transactions and projections
 
 ### Implementation Breakdown:
 #### Settings & Configuration ✅
@@ -94,12 +96,15 @@
 - [x] Validate currency changes against existing transactions
 - [x] Default enabled currencies: USD, EUR, AED
 
-#### Category Management
-- [ ] Create category management view (accessible via 'c')
-- [ ] Add edit functionality (name, icon, color)
-- [ ] Implement category merge operation
-- [ ] Add category history tracking
-- [ ] Prevent deletion of used categories
+#### Category Management ✅
+- [x] Create category management view (accessible via 'c')
+- [x] Add edit functionality (name, icon, color)
+- [x] Implement category merge operation
+- [x] Add category history tracking
+- [x] Prevent deletion of used categories
+- [x] Default category protection
+- [x] Transaction migration on merge
+- [x] Comprehensive test coverage
 
 #### Recurring Transactions
 - [ ] Create recurring transaction model

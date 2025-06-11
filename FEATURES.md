@@ -54,16 +54,17 @@
 - **Help System**: Built-in keyboard shortcuts help
 - **Responsive Layout**: Adapts to terminal size
 
+### 7. Category Management ✅ NEW
+- **Edit Categories**: Modify name, icon, and color of custom categories
+- **Merge Categories**: Combine categories with atomic transaction migration
+- **Create Custom**: Add new categories with custom properties
+- **History Tracking**: Complete audit trail of all category changes
+- **Delete Protection**: Prevent deletion of categories with transactions
+- **Default Protection**: System categories cannot be modified
+- **Type Safety**: Enforces category type consistency
+- **UI Navigation**: Accessible via 'c' key from dashboard
+
 ## In-Progress Features
-
-### Category Management (Phase 2)
-**Status**: Architecture complete, implementation pending
-
-- **Edit Categories**: Modify name, icon, and color
-- **Merge Categories**: Combine categories with transaction migration
-- **History Tracking**: Audit trail of category changes
-- **Custom Categories**: Create user-defined categories
-- **Delete Protection**: Prevent deletion of used categories
 
 ### Recurring Transactions (Phase 3)
 **Status**: Model designed, not implemented
@@ -155,8 +156,8 @@
 - `t` - View transactions
 - `b` - Manage budgets
 - `r` - View reports
+- `c` - Manage categories
 - `u` - Currency settings
-- `c` - Categories (coming soon)
 
 ### Lists
 - `j`/`↓` - Move down
@@ -169,6 +170,14 @@
 - `Tab` - Navigate fields
 - `Enter` - Save
 - `Esc` - Cancel without saving
+
+### Category Management
+- `n` - Create new category
+- `e` - Edit selected category
+- `m` - Merge categories
+- `d` - Delete empty category
+- `Enter` - Select category
+- `Esc` - Back to dashboard
 
 ## API Integration
 

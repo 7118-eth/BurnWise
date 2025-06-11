@@ -93,20 +93,32 @@ func (s *Settings) SetDefaultCurrency(currency string) bool {
 	return true
 }
 
-// CategoryHistory tracks changes to categories
-type CategoryHistory struct {
-	ID               uint           `gorm:"primaryKey" json:"id"`
-	CategoryID       uint           `gorm:"not null" json:"category_id"`
-	OldName          string         `json:"old_name"`
-	NewName          string         `json:"new_name"`
-	Action           string         `gorm:"type:varchar(20);not null" json:"action"` // rename, merge, delete
-	TargetCategoryID *uint          `json:"target_category_id,omitempty"`
-	ChangedAt        time.Time      `gorm:"default:CURRENT_TIMESTAMP" json:"changed_at"`
-	CreatedAt        time.Time      `json:"created_at"`
-}
+type CategoryHistoryAction string
 
 const (
-	CategoryActionRename = "rename"
-	CategoryActionMerge  = "merge"
-	CategoryActionDelete = "delete"
+	CategoryActionCreated CategoryHistoryAction = "created"
+	CategoryActionRenamed CategoryHistoryAction = "renamed"
+	CategoryActionMerged  CategoryHistoryAction = "merged"
+	CategoryActionDeleted CategoryHistoryAction = "deleted"
+	CategoryActionEdited  CategoryHistoryAction = "edited"
 )
+
+// CategoryHistory tracks changes to categories
+type CategoryHistory struct {
+	ID               uint                  `gorm:"primaryKey" json:"id"`
+	CategoryID       uint                  `gorm:"not null" json:"category_id"`
+	Action           CategoryHistoryAction `gorm:"type:varchar(20);not null" json:"action"`
+	OldName          string                `gorm:"type:varchar(100)" json:"old_name,omitempty"`
+	NewName          string                `gorm:"type:varchar(100)" json:"new_name,omitempty"`
+	OldIcon          string                `gorm:"type:varchar(10)" json:"old_icon,omitempty"`
+	NewIcon          string                `gorm:"type:varchar(10)" json:"new_icon,omitempty"`
+	OldColor         string                `gorm:"type:varchar(7)" json:"old_color,omitempty"`
+	NewColor         string                `gorm:"type:varchar(7)" json:"new_color,omitempty"`
+	TargetCategoryID *uint                 `json:"target_category_id,omitempty"`
+	TransactionCount int                   `json:"transaction_count"`
+	Notes            string                `gorm:"type:text" json:"notes,omitempty"`
+	CreatedAt        time.Time             `json:"created_at"`
+
+	Category       *Category `gorm:"foreignKey:CategoryID" json:"category,omitempty"`
+	TargetCategory *Category `gorm:"foreignKey:TargetCategoryID" json:"target_category,omitempty"`
+}

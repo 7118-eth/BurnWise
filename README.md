@@ -10,6 +10,7 @@ A fast, keyboard-driven terminal application for personal finance management bui
 - 📊 **Budget Management** - Set monthly/yearly budgets and track progress
 - 📈 **Financial Reports** - View spending trends and category breakdowns
 - ⌨️ **Keyboard-First Design** - Navigate entirely with keyboard shortcuts
+- 🎨 **Category Management** - Create, edit, and merge custom categories
 - 🔍 **Smart Search** - Filter transactions by date, category, or amount
 - 📁 **Data Export** - Export your data to CSV for external analysis
 - ⚙️ **Settings Management** - JSON-based configuration with currency preferences
@@ -86,8 +87,8 @@ Date        Category        Description          Amount
 - `t` - View all transactions
 - `b` - Manage budgets
 - `r` - View reports
+- `c` - Manage categories
 - `u` - Currency settings
-- `c` - Manage categories (coming soon)
 - `e` - Edit selected item
 - `d` - Delete selected item (with confirmation)
 - `f` - Filter options
@@ -123,6 +124,21 @@ Default enabled currencies:
 - **AED** - UAE Dirham (fixed rate)
 
 You can enable additional currencies from a list of 38+ supported currencies including GBP, JPY, CHF, CAD, AUD, CNY, INR, and more.
+
+### Category Management
+
+Press `c` from the dashboard to access category management where you can:
+- **View Categories**: See all categories with transaction counts
+- **Edit Categories**: Modify name, icon (emoji), and color of custom categories
+- **Create New**: Add custom categories for better organization
+- **Merge Categories**: Combine related categories and automatically migrate transactions
+- **History Tracking**: All changes are recorded for audit purposes
+
+Features:
+- Default categories are protected and cannot be edited or deleted
+- Categories with transactions cannot be deleted (use merge instead)
+- Icon and color customization for visual organization
+- Type safety ensures income/expense categories remain separate
 
 ## Data Storage
 

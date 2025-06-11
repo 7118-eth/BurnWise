@@ -34,12 +34,50 @@ func (s *CategoryService) Update(category *models.Category) error {
 		return fmt.Errorf("validation failed: %w", err)
 	}
 
+	// Get the old category to track changes
+	oldCategory, err := s.repo.GetByID(category.ID)
+	if err != nil {
+		return fmt.Errorf("category not found: %w", err)
+	}
+
+	// Check for duplicate names
 	existing, _ := s.repo.FindByName(category.Name, category.Type)
 	if existing != nil && existing.ID != category.ID {
 		return fmt.Errorf("category with name '%s' already exists for type %s", category.Name, category.Type)
 	}
 
-	return s.repo.Update(category)
+	// Update the category
+	if err := s.repo.Update(category); err != nil {
+		return err
+	}
+
+	// Track history if there were changes
+	if oldCategory.Name != category.Name || oldCategory.Icon != category.Icon || oldCategory.Color != category.Color {
+		history := &models.CategoryHistory{
+			CategoryID: category.ID,
+			Action:     models.CategoryActionEdited,
+		}
+
+		if oldCategory.Name != category.Name {
+			history.OldName = oldCategory.Name
+			history.NewName = category.Name
+		}
+		if oldCategory.Icon != category.Icon {
+			history.OldIcon = oldCategory.Icon
+			history.NewIcon = category.Icon
+		}
+		if oldCategory.Color != category.Color {
+			history.OldColor = oldCategory.Color
+			history.NewColor = category.Color
+		}
+
+		if err := s.repo.CreateHistory(history); err != nil {
+			// Log error but don't fail the update
+			fmt.Printf("Warning: failed to record category history: %v\n", err)
+		}
+	}
+
+	return nil
 }
 
 func (s *CategoryService) Delete(id uint) error {
@@ -106,4 +144,46 @@ func (s *CategoryService) EnsureDefaultCategories() error {
 	}
 	
 	return nil
+}
+
+func (s *CategoryService) MergeCategories(sourceID, targetID uint) error {
+	if sourceID == targetID {
+		return fmt.Errorf("cannot merge a category with itself")
+	}
+
+	// Verify source category
+	source, err := s.repo.GetByID(sourceID)
+	if err != nil {
+		return fmt.Errorf("source category not found: %w", err)
+	}
+
+	// Verify target category
+	target, err := s.repo.GetByID(targetID)
+	if err != nil {
+		return fmt.Errorf("target category not found: %w", err)
+	}
+
+	// Ensure both categories are of the same type
+	if source.Type != target.Type {
+		return fmt.Errorf("cannot merge categories of different types (%s -> %s)", source.Type, target.Type)
+	}
+
+	// Prevent merging default categories
+	if source.IsDefault {
+		return fmt.Errorf("cannot merge default category '%s'", source.Name)
+	}
+
+	return s.repo.MergeCategories(sourceID, targetID)
+}
+
+func (s *CategoryService) GetAllWithUsageCount() ([]*models.CategoryWithTotal, error) {
+	return s.repo.GetAllWithUsageCount()
+}
+
+func (s *CategoryService) GetHistory(categoryID uint) ([]*models.CategoryHistory, error) {
+	return s.repo.GetHistory(categoryID)
+}
+
+func (s *CategoryService) GetUsageCount(categoryID uint) (int64, error) {
+	return s.repo.GetUsageCount(categoryID)
 }

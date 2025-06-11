@@ -40,6 +40,7 @@ type App struct {
 	budgetList       *views.BudgetList
 	budgetForm       *views.BudgetForm
 	reports          *views.Reports
+	categoryList     *views.CategoryListModel
 	currencySettings *views.CurrencySettings
 	
 	err             error
@@ -69,6 +70,7 @@ func (a *App) Init() tea.Cmd {
 	a.budgetList = views.NewBudgetList(a.budgetService, a.categoryService)
 	a.budgetForm = views.NewBudgetForm(a.budgetService, a.categoryService)
 	a.reports = views.NewReports(a.txService, a.categoryService, a.budgetService)
+	a.categoryList = views.NewCategoryListModel(a.categoryService)
 	a.currencySettings = views.NewCurrencySettings(a.settingsService, a.currencyService, a.txService)
 	
 	return tea.Batch(
@@ -89,7 +91,7 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		if a.currentView == viewDashboard || a.currentView == viewTransactions || 
-		   a.currentView == viewBudgets || a.currentView == viewReports {
+		   a.currentView == viewBudgets || a.currentView == viewReports || a.currentView == viewCategories {
 			switch msg.String() {
 			case "q", "ctrl+c":
 				return a, tea.Quit
@@ -112,6 +114,9 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "r":
 				a.currentView = viewReports
 				return a, a.reports.Init()
+			case "c":
+				a.currentView = viewCategories
+				return a, a.categoryList.Init()
 			case "u":
 				a.currentView = viewCurrencySettings
 				return a, a.currencySettings.Init()
@@ -170,6 +175,10 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		a.budgetForm, cmd = a.budgetForm.Update(msg)
 	case viewReports:
 		a.reports, cmd = a.reports.Update(msg)
+	case viewCategories:
+		var model tea.Model
+		model, cmd = a.categoryList.Update(msg)
+		a.categoryList = model.(*views.CategoryListModel)
 	case viewCurrencySettings:
 		a.currencySettings, cmd = a.currencySettings.Update(msg)
 	}
@@ -198,6 +207,8 @@ func (a *App) View() string {
 		content = a.budgetForm.View()
 	case viewReports:
 		content = a.reports.View()
+	case viewCategories:
+		content = a.categoryList.View()
 	case viewCurrencySettings:
 		content = a.currencySettings.View()
 	}
@@ -231,6 +242,10 @@ func (a *App) updateViewSizes() {
 	}
 	if a.reports != nil {
 		a.reports.SetSize(a.width, a.height)
+	}
+	if a.categoryList != nil {
+		model, _ := a.categoryList.Update(tea.WindowSizeMsg{Width: a.width, Height: a.height})
+		a.categoryList = model.(*views.CategoryListModel)
 	}
 	if a.currencySettings != nil {
 		a.currencySettings, _ = a.currencySettings.Update(tea.WindowSizeMsg{Width: a.width, Height: a.height})

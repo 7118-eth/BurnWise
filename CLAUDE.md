@@ -85,6 +85,7 @@ budget-tracker/
 - `b` - Manage budgets
 - `r` - View reports
 - `c` - Manage categories
+- `u` - Currency settings
 
 ### List Views
 - `j`/`↓` - Move down
@@ -97,6 +98,15 @@ budget-tracker/
 - `Tab` - Navigate fields
 - `Enter` - Save transaction
 - `Esc` - Cancel without saving
+
+### Category Management
+- `n` - Create new category
+- `e` - Edit selected category
+- `m` - Merge categories
+- `d` - Delete empty category
+- `h` - View history (coming soon)
+- `Enter` - Select category
+- `Esc` - Back to dashboard
 
 ## Testing Approach
 
@@ -312,13 +322,14 @@ type MonthProjection struct {
    - Currency enable/disable UI
    - Migration logic for currency changes
 
-2. **Phase 2: Category Management** (NEXT)
-   - Category management UI view
-   - Edit/merge functionality
-   - Transaction migration on category changes
-   - History tracking
+2. **Phase 2: Category Management** ✅ COMPLETED
+   - Category management UI view with list, edit, merge
+   - Full CRUD operations with validation
+   - Transaction migration on category merge
+   - Comprehensive history tracking
+   - Default category protection
 
-3. **Phase 3: Recurring Transactions**
+3. **Phase 3: Recurring Transactions** (NEXT)
    - Data model and migrations
    - Service layer for processing
    - UI for management
@@ -338,7 +349,15 @@ type MonthProjection struct {
 
 ## Recent Changes
 
-### Currency Configuration (Completed)
+### Category Management (Completed - Phase 2)
+- Full category editing with name, icon, and color customization
+- Category merge functionality with atomic transaction migration
+- Comprehensive history tracking for all category changes
+- UI views for list, edit, and merge operations
+- Protection for default categories and categories with transactions
+- Accessible via 'c' key from dashboard
+
+### Currency Configuration (Completed - Phase 1)
 - Added `SettingsService` for managing application configuration
 - Created currency settings UI accessible via 'u' from dashboard
 - Implemented enable/disable functionality with validation
@@ -351,16 +370,21 @@ type MonthProjection struct {
 ### Key Components Added
 1. **Models**:
    - `models.Settings`: Application configuration structure
-   - `models.CategoryHistory`: For tracking category changes
+   - `models.CategoryHistory`: Complete history tracking for category changes
 
 2. **Services**:
    - `SettingsService`: Manages JSON configuration file
    - Updated `CurrencyService`: Now uses settings for enabled currencies
+   - Enhanced `CategoryService`: Edit, merge, and history tracking
 
 3. **UI Views**:
    - `CurrencySettings`: Interactive currency management interface
+   - `CategoryListModel`: Main category management view
+   - `CategoryEditModel`: Create/edit category form
+   - `CategoryMergeModel`: Merge categories with transaction migration
 
 4. **Integration Points**:
    - Main app initialization includes settings service
    - All services updated to accept settings service
    - Dashboard updated with 'u' shortcut for currency settings
+   - Dashboard updated with 'c' shortcut for category management
