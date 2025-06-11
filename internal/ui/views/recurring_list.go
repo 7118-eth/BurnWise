@@ -285,7 +285,9 @@ func (m *RecurringListModel) View() string {
 	}
 	
 	var content strings.Builder
-	content.WriteString(m.list.View())
+	
+	// Custom grouped view
+	content.WriteString(m.renderGroupedView())
 	
 	// Show messages
 	if m.errorMsg != "" {
@@ -326,4 +328,171 @@ func (m *RecurringListModel) clearMessages() tea.Cmd {
 func (m *RecurringListModel) handleClearMessages() {
 	m.errorMsg = ""
 	m.successMsg = ""
+}
+
+func (m *RecurringListModel) renderGroupedView() string {
+	if len(m.recurringItems) == 0 {
+		return lipgloss.NewStyle().
+			Foreground(lipgloss.Color(styles.Muted)).
+			MarginTop(2).
+			Render("No recurring transactions found. Press 'n' to create one.")
+	}
+	
+	// Group items by frequency
+	groupedItems := m.groupByFrequency()
+	
+	var content strings.Builder
+	content.WriteString(styles.TitleStyle.Render("🔄 RECURRING EXPENSES"))
+	content.WriteString("\n\n")
+	
+	// Calculate totals
+	monthlyTotal := 0.0
+	yearlyTotal := 0.0
+	
+	// Render each frequency group
+	for _, freq := range []models.RecurrenceFrequency{
+		models.FrequencyDaily,
+		models.FrequencyWeekly,
+		models.FrequencyMonthly,
+		models.FrequencyYearly,
+	} {
+		items, exists := groupedItems[freq]
+		if !exists || len(items) == 0 {
+			continue
+		}
+		
+		// Calculate group total in monthly terms
+		groupMonthlyTotal := 0.0
+		for _, item := range items {
+			if item.recurring.Type == models.TransactionTypeExpense && item.recurring.IsActive {
+				monthlyAmount := m.calculateMonthlyAmount(item.recurring)
+				groupMonthlyTotal += monthlyAmount
+			}
+		}
+		
+		// Format frequency header
+		freqDisplay := strings.ToUpper(string(freq))
+		totalDisplay := fmt.Sprintf("($%.2f/mo | $%.2f/yr)", groupMonthlyTotal, groupMonthlyTotal*12)
+		
+		header := lipgloss.NewStyle().
+			Bold(true).
+			Foreground(lipgloss.Color(styles.Primary)).
+			Render(fmt.Sprintf("%s %s", freqDisplay, totalDisplay))
+		
+		content.WriteString(header)
+		content.WriteString("\n")
+		
+		// Render items in this group
+		for i, item := range items {
+			// Determine if this is the selected item
+			isSelected := false
+			if selectedItem, ok := m.list.SelectedItem().(recurringItem); ok {
+				isSelected = selectedItem.recurring.ID == item.recurring.ID
+			}
+			
+			itemStr := m.renderRecurringItem(item.recurring, isSelected)
+			content.WriteString(itemStr)
+			if i < len(items)-1 {
+				content.WriteString("\n")
+			}
+		}
+		content.WriteString("\n\n")
+		
+		monthlyTotal += groupMonthlyTotal
+	}
+	
+	yearlyTotal = monthlyTotal * 12
+	
+	// Footer with totals
+	divider := strings.Repeat("━", 60)
+	content.WriteString(lipgloss.NewStyle().
+		Foreground(lipgloss.Color(styles.Primary)).
+		Render(divider))
+	content.WriteString("\n")
+	
+	totalLine := fmt.Sprintf("Total Monthly Burn: $%.2f", monthlyTotal)
+	content.WriteString(lipgloss.NewStyle().
+		Bold(true).
+		Render(totalLine))
+	content.WriteString("\n")
+	
+	yearlyLine := fmt.Sprintf("Projected Yearly:   $%.2f", yearlyTotal)
+	content.WriteString(lipgloss.NewStyle().
+		Foreground(lipgloss.Color(styles.Muted)).
+		Render(yearlyLine))
+	content.WriteString("\n\n")
+	
+	// Help text
+	help := "[n]ew  [e]dit  [p]ause/resume  [d]elete  [esc] back"
+	content.WriteString(styles.HelpStyle.Render(help))
+	
+	return content.String()
+}
+
+func (m *RecurringListModel) groupByFrequency() map[models.RecurrenceFrequency][]recurringItem {
+	grouped := make(map[models.RecurrenceFrequency][]recurringItem)
+	
+	for _, rt := range m.recurringItems {
+		item := recurringItem{recurring: rt}
+		grouped[rt.Frequency] = append(grouped[rt.Frequency], item)
+	}
+	
+	return grouped
+}
+
+func (m *RecurringListModel) renderRecurringItem(rt *models.RecurringTransaction, isSelected bool) string {
+	// Icon and description
+	icon := ""
+	if rt.Category.Icon != "" {
+		icon = rt.Category.Icon + " "
+	}
+	
+	status := ""
+	if !rt.IsActive {
+		status = " (paused)"
+	} else if rt.EndDate != nil && time.Now().After(*rt.EndDate) {
+		status = " (ended)"
+	}
+	
+	name := fmt.Sprintf("%s%s%s", icon, rt.Description, status)
+	
+	// Amount and next due
+	amount := fmt.Sprintf("%s %.2f", rt.Currency, rt.Amount)
+	nextDue := rt.NextDueDate.Format("Jan 2")
+	
+	// Format the line
+	nameWidth := 30
+	if len(name) > nameWidth {
+		name = name[:nameWidth-3] + "..."
+	}
+	
+	line := fmt.Sprintf("  %-*s  %10s  Next: %s", nameWidth, name, amount, nextDue)
+	
+	// Apply selection styling
+	if isSelected {
+		return lipgloss.NewStyle().
+			Foreground(lipgloss.Color(styles.PrimaryColor)).
+			Bold(true).
+			Render("→ " + line[2:])
+	}
+	
+	return line
+}
+
+func (m *RecurringListModel) calculateMonthlyAmount(rt *models.RecurringTransaction) float64 {
+	amount := rt.Amount
+	
+	// Convert to monthly based on frequency
+	switch rt.Frequency {
+	case models.FrequencyDaily:
+		return amount * 30.44 / float64(rt.FrequencyValue) // Average days per month
+	case models.FrequencyWeekly:
+		return amount * 4.33 / float64(rt.FrequencyValue) // Average weeks per month
+	case models.FrequencyMonthly:
+		return amount / float64(rt.FrequencyValue)
+	case models.FrequencyYearly:
+		return amount / (12 * float64(rt.FrequencyValue))
+	default:
+		return amount
+	}
 }
