@@ -1,8 +1,8 @@
-# Budget Tracker - Feature Documentation
+# BurnWise - Feature Documentation
 
 ## Project Focus: Monthly Burn Rate Tracking
 
-The Budget Tracker is primarily designed to help users monitor their monthly burn rate by providing clear visibility into recurring expenses and one-time transactions. The dashboard emphasizes expense tracking and projections based on recurring commitments.
+BurnWise is primarily designed to help users monitor their monthly burn rate by providing clear visibility into recurring expenses and one-time transactions. The dashboard emphasizes expense tracking and projections based on recurring commitments.
 
 ## Completed Features
 
@@ -197,15 +197,15 @@ The Budget Tracker is primarily designed to help users monitor their monthly bur
 ## File Locations
 
 ### Database
-- Linux/Mac: `~/.local/share/budget-tracker/budget.db`
-- Fallback: `./data/budget.db`
+- Linux/Mac: `~/.local/share/burnwise/burnwise.db`
+- Fallback: `./data/burnwise.db`
 
 ### Settings
 - Location: `./data/settings.json`
 - Auto-created on first run
 
 ### Logs
-- Location: `./data/budget.log`
+- Location: `./data/burnwise.log`
 - Debug mode: `BUDGET_DEBUG=1`
 
 ## Security Considerations

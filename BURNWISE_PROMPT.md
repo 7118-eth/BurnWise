@@ -1,6 +1,6 @@
-# Budget Tracker Implementation Prompt
+# BurnWise Implementation Prompt
 
-You are tasked with creating a standalone budget tracking application in Go. This will be a terminal-based personal finance tool focused on income/expense tracking, budgeting, and financial reporting.
+You are tasked with creating a standalone burn rate monitoring application in Go. This will be a terminal-based expense tracking tool focused on monitoring monthly burn rate, recurring expenses, and financial projections.
 
 ## Project Requirements
 
@@ -110,7 +110,7 @@ type Budget struct {
 
 ### Main Dashboard View
 ```
-💰 Budget Tracker                                    October 2025
+🔥 BurnWise                                          October 2025
 
 Income:    $5,000.00    ████████████████████ 100%
 Expenses:  $3,500.00    ██████████████       70%

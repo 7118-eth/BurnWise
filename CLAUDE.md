@@ -1,4 +1,4 @@
-# Budget Tracker - AI Assistant Guide
+# BurnWise - AI Assistant Guide
 
 ## Project Overview
 
@@ -15,7 +15,7 @@ This is a terminal-based expense tracking tool built with Go, designed for monit
 
 ### Project Structure
 ```
-budget-tracker/
+burnwise/
 ├── cmd/budget/         # Application entry point
 ├── internal/
 │   ├── models/        # Data structures

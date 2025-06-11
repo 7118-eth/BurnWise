@@ -1,4 +1,4 @@
-# Budget Tracker - Burn Rate Monitor
+# BurnWise - Monthly Burn Rate Monitor
 
 A fast, keyboard-driven terminal application for tracking expenses and monitoring monthly burn rate, built with Go.
 
@@ -25,8 +25,8 @@ A fast, keyboard-driven terminal application for tracking expenses and monitorin
 
 ### From Source
 ```bash
-git clone https://github.com/yourusername/budget-tracker
-cd budget-tracker
+git clone https://github.com/yourusername/burnwise
+cd burnwise
 make build
 ```
 
@@ -39,7 +39,7 @@ make install  # Installs to $GOPATH/bin
 
 1. **Launch the application**
    ```bash
-   budget
+   burnwise
    ```
 
 2. **Add your first transaction** - Press `n` to create a new transaction
@@ -52,7 +52,7 @@ make install  # Installs to $GOPATH/bin
 
 ### Main Dashboard
 ```
-💰 Budget Tracker                                    October 2025
+🔥 BurnWise                                          October 2025
 
 ━━━ MONTHLY BURN RATE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Recurring:   $2,450 (8 active)
@@ -162,8 +162,8 @@ Features:
 
 Your financial data is stored locally:
 - **Database**: 
-  - Linux/Mac: `~/.local/share/budget-tracker/budget.db`
-  - Windows: `%APPDATA%\budget-tracker\budget.db`
+  - Linux/Mac: `~/.local/share/burnwise/burnwise.db`
+  - Windows: `%APPDATA%\burnwise\burnwise.db`
 - **Settings**: `./data/settings.json`
 
 ### Backup
@@ -214,8 +214,8 @@ The application uses a JSON settings file (`data/settings.json`) that is automat
 ### Building from Source
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/budget-tracker
-cd budget-tracker
+git clone https://github.com/yourusername/burnwise
+cd burnwise
 
 # Install dependencies
 go mod download
@@ -232,7 +232,7 @@ make dev
 
 ### Project Structure
 ```
-budget-tracker/
+burnwise/
 ├── cmd/budget/         # Application entry point
 ├── internal/
 │   ├── models/        # Data models

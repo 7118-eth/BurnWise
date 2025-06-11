@@ -1,4 +1,4 @@
-# Budget Tracker - Implementation Tasks
+# BurnWise - Implementation Tasks
 
 ## Phase 1: Foundation ✓
 - [x] Set up project structure

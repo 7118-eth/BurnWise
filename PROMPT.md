@@ -1,4 +1,4 @@
-# Budget Tracker - Phase 3 Implementation Prompt
+# BurnWise - Phase 3 Implementation Prompt
 
 I'm continuing work on a budget tracker application in Go. Please read the following documentation files to understand the current state:
 
