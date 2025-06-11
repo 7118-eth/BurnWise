@@ -85,6 +85,7 @@ budget-tracker/
 - `b` - Manage budgets
 - `r` - View reports
 - `c` - Manage categories
+- `s` - Recurring transactions
 - `u` - Currency settings
 
 ### List Views
@@ -349,6 +350,16 @@ type MonthProjection struct {
 
 ## Recent Changes
 
+### Recurring Transactions (Completed - Phase 3)
+- Full recurring transaction model with flexible frequency options
+- Automatic transaction generation from recurring items
+- Skip/modify individual occurrences with history tracking
+- Pause/resume functionality for temporary suspension
+- UI views for list and create/edit forms
+- Accessible via 's' key from dashboard
+- Automatic processing of due transactions on startup
+- Comprehensive tests for all features
+
 ### Category Management (Completed - Phase 2)
 - Full category editing with name, icon, and color customization
 - Category merge functionality with atomic transaction migration
@@ -371,20 +382,26 @@ type MonthProjection struct {
 1. **Models**:
    - `models.Settings`: Application configuration structure
    - `models.CategoryHistory`: Complete history tracking for category changes
+   - `models.RecurringTransaction`: Recurring transaction with frequency options
+   - `models.RecurringTransactionOccurrence`: Track skip/modify actions
 
 2. **Services**:
    - `SettingsService`: Manages JSON configuration file
    - Updated `CurrencyService`: Now uses settings for enabled currencies
    - Enhanced `CategoryService`: Edit, merge, and history tracking
+   - `RecurringTransactionService`: Process due transactions, skip/modify occurrences
 
 3. **UI Views**:
    - `CurrencySettings`: Interactive currency management interface
    - `CategoryListModel`: Main category management view
    - `CategoryEditModel`: Create/edit category form
    - `CategoryMergeModel`: Merge categories with transaction migration
+   - `RecurringListModel`: List and manage recurring transactions
+   - `RecurringFormModel`: Create/edit recurring transactions
 
 4. **Integration Points**:
-   - Main app initialization includes settings service
-   - All services updated to accept settings service
-   - Dashboard updated with 'u' shortcut for currency settings
+   - Main app initialization includes all services
+   - Automatic processing of due transactions on startup
    - Dashboard updated with 'c' shortcut for category management
+   - Dashboard updated with 's' shortcut for recurring transactions
+   - Dashboard updated with 'u' shortcut for currency settings

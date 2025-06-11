@@ -82,11 +82,15 @@
 - [x] Category merge with transaction migration
 - [x] Category history tracking and auditing
 - [x] Comprehensive tests for category management
-- [ ] Recurring transactions model and service
-- [ ] Recurring transaction UI
+- [x] Recurring transactions model and service
+- [x] Recurring transaction UI
+- [x] Skip/modify occurrence functionality
+- [x] Automatic transaction generation
+- [x] Comprehensive tests for recurring transactions
+- [ ] Smart pattern detection from transaction history
 - [ ] Yearly projections based on recurring expenses
 - [ ] Enhanced reports with projections
-- [ ] Tests for recurring transactions and projections
+- [ ] Tests for projection features
 
 ### Implementation Breakdown:
 #### Settings & Configuration ✅
@@ -106,13 +110,16 @@
 - [x] Transaction migration on merge
 - [x] Comprehensive test coverage
 
-#### Recurring Transactions
-- [ ] Create recurring transaction model
-- [ ] Add database migrations for recurring_transactions table
-- [ ] Implement recurrence service (daily/weekly/monthly/yearly)
-- [ ] Build management UI for recurring transactions
-- [ ] Add automatic transaction generation
-- [ ] Handle edge cases (skip, edit single occurrence)
+#### Recurring Transactions ✅
+- [x] Create recurring transaction model
+- [x] Add database migrations for recurring_transactions table
+- [x] Implement recurrence service (daily/weekly/monthly/yearly)
+- [x] Build management UI for recurring transactions
+- [x] Add automatic transaction generation
+- [x] Handle edge cases (skip, edit single occurrence)
+- [x] Pause/resume functionality
+- [x] End date support
+- [x] Comprehensive test coverage
 
 #### Projections & Reports
 - [ ] Create projection service
