@@ -123,3 +123,77 @@ func TestTransactionService_GetCurrentMonthSummary(t *testing.T) {
 	assert.Equal(t, 4850.0, summary.Balance)
 	assert.Equal(t, 3, summary.Count)
 }
+
+func TestTransactionService_GetCurrentMonthBurnRate(t *testing.T) {
+	db := test.SetupTestDB(t)
+	txRepo := repository.NewTransactionRepository(db)
+	recurringRepo := repository.NewRecurringTransactionRepository(db)
+	
+	tempDir := t.TempDir()
+	settingsService, err := NewSettingsService(tempDir)
+	require.NoError(t, err)
+	currencyService := NewCurrencyService(settingsService)
+	
+	service := NewTransactionService(txRepo, currencyService)
+	service.SetRecurringRepo(recurringRepo)
+	
+	// Create test category
+	category := test.CreateTestCategory(t, db, "Living", models.TransactionTypeExpense)
+	
+	// Create a recurring transaction
+	recurring := &models.RecurringTransaction{
+		Type:           models.TransactionTypeExpense,
+		Amount:         1500.00,
+		Currency:       "USD",
+		CategoryID:     category.ID,
+		Description:    "Rent",
+		Frequency:      models.FrequencyMonthly,
+		FrequencyValue: 1,
+		StartDate:      time.Now().AddDate(0, -1, 0),
+		NextDueDate:    time.Now(),
+		IsActive:       true,
+	}
+	require.NoError(t, recurringRepo.Create(recurring))
+	
+	// Create transactions for current month
+	now := time.Now()
+	
+	// One-time expense
+	tx1 := &models.Transaction{
+		Type:        models.TransactionTypeExpense,
+		Amount:      250.00,
+		Currency:    "USD",
+		AmountUSD:   250.00,
+		CategoryID:  category.ID,
+		Description: "Groceries",
+		Date:        now,
+	}
+	require.NoError(t, txRepo.Create(tx1))
+	
+	// Recurring expense
+	tx2 := &models.Transaction{
+		Type:                   models.TransactionTypeExpense,
+		Amount:                 1500.00,
+		Currency:               "USD",
+		AmountUSD:              1500.00,
+		CategoryID:             category.ID,
+		Description:            "Rent",
+		Date:                   now,
+		RecurringTransactionID: &recurring.ID,
+	}
+	require.NoError(t, txRepo.Create(tx2))
+	
+	// Get burn rate
+	burnRate, err := service.GetCurrentMonthBurnRate()
+	require.NoError(t, err)
+	require.NotNil(t, burnRate)
+	
+	// Verify calculations
+	assert.Equal(t, 250.00, burnRate.OneTimeExpenses)
+	assert.Equal(t, 1, burnRate.OneTimeCount)
+	assert.Equal(t, 1500.00, burnRate.RecurringExpenses)
+	assert.Equal(t, 1, burnRate.RecurringCount)
+	assert.Equal(t, 1750.00, burnRate.TotalBurn)
+	assert.Equal(t, 1500.00, burnRate.ProjectedMonthly)
+	assert.Equal(t, 18000.00, burnRate.ProjectedYearly)
+}
