@@ -21,6 +21,7 @@ type Dashboard struct {
 	budgetService *service.BudgetService
 	
 	summary      *models.TransactionSummary
+	burnRate     *models.BurnRateSummary
 	transactions []*models.Transaction
 	budgets      []*models.BudgetStatus
 	
@@ -45,6 +46,7 @@ func (d *Dashboard) Update(msg tea.Msg) (*Dashboard, tea.Cmd) {
 	case dashboardDataMsg:
 		d.loading = false
 		d.summary = msg.summary
+		d.burnRate = msg.burnRate
 		d.transactions = msg.transactions
 		d.budgets = msg.budgets
 		d.err = msg.err
@@ -63,6 +65,7 @@ func (d *Dashboard) View() string {
 	}
 	
 	header := d.renderHeader()
+	burnRate := d.renderBurnRate()
 	summary := d.renderSummary()
 	transactions := d.renderRecentTransactions()
 	budgets := d.renderBudgetOverview()
@@ -71,6 +74,8 @@ func (d *Dashboard) View() string {
 	content := lipgloss.JoinVertical(
 		lipgloss.Left,
 		header,
+		"",
+		burnRate,
 		"",
 		summary,
 		"",
@@ -111,10 +116,75 @@ func (d *Dashboard) renderHeader() string {
 	return header
 }
 
+func (d *Dashboard) renderBurnRate() string {
+	if d.burnRate == nil {
+		return ""
+	}
+	
+	// Section title
+	title := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(styles.Primary).
+		Render("━━━ MONTHLY BURN RATE ")
+	
+	titleLine := title + lipgloss.NewStyle().
+		Foreground(styles.Primary).
+		Render(strings.Repeat("━", d.width-lipgloss.Width(title)-4))
+	
+	// Burn rate details
+	recurringLine := fmt.Sprintf("Recurring:   %s (%d active)",
+		styles.FormatAmount(d.burnRate.RecurringExpenses, "$"),
+		d.burnRate.RecurringCount)
+	
+	oneTimeLine := fmt.Sprintf("One-time:    %s",
+		styles.FormatAmount(d.burnRate.OneTimeExpenses, "$"))
+	
+	totalLine := lipgloss.NewStyle().
+		Bold(true).
+		Render(fmt.Sprintf("Total Burn:  %s",
+			styles.FormatAmount(d.burnRate.TotalBurn, "$")))
+	
+	// Add projection info if different from current month
+	projectionLines := []string{}
+	if d.burnRate.ProjectedMonthly > 0 && d.burnRate.ProjectedMonthly != d.burnRate.RecurringExpenses {
+		projectionLines = append(projectionLines, "")
+		projectionLines = append(projectionLines, 
+			lipgloss.NewStyle().
+				Foreground(styles.Muted).
+				Render(fmt.Sprintf("Projected Monthly: %s",
+					styles.FormatAmount(d.burnRate.ProjectedMonthly, "$"))))
+		projectionLines = append(projectionLines,
+			lipgloss.NewStyle().
+				Foreground(styles.Muted).
+				Render(fmt.Sprintf("Projected Yearly:  %s",
+					styles.FormatAmount(d.burnRate.ProjectedYearly, "$"))))
+	}
+	
+	lines := []string{
+		titleLine,
+		recurringLine,
+		oneTimeLine,
+		totalLine,
+	}
+	lines = append(lines, projectionLines...)
+	
+	return lipgloss.JoinVertical(lipgloss.Left, lines...)
+}
+
 func (d *Dashboard) renderSummary() string {
 	if d.summary == nil {
 		return ""
 	}
+	
+	// Section title
+	title := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(styles.Primary).
+		Render("━━━ INCOME & EXPENSES ")
+	
+	titleLine := title + lipgloss.NewStyle().
+		Foreground(styles.Primary).
+		Render(strings.Repeat("━", d.width-lipgloss.Width(title)-4))
 	
 	incomeBar := d.renderProgressBar("Income", d.summary.TotalIncome, d.summary.TotalIncome, styles.Income)
 	expenseBar := d.renderProgressBar("Expenses", d.summary.TotalExpenses, d.summary.TotalIncome, styles.Expense)
@@ -129,6 +199,7 @@ func (d *Dashboard) renderSummary() string {
 	
 	return lipgloss.JoinVertical(
 		lipgloss.Left,
+		titleLine,
 		incomeBar,
 		expenseBar,
 		divider,
@@ -299,6 +370,11 @@ func (d *Dashboard) loadData() tea.Msg {
 		return dashboardDataMsg{err: err}
 	}
 	
+	burnRate, err := d.txService.GetCurrentMonthBurnRate()
+	if err != nil {
+		return dashboardDataMsg{err: err}
+	}
+	
 	transactions, err := d.txService.GetRecentTransactions(10)
 	if err != nil {
 		return dashboardDataMsg{err: err}
@@ -311,6 +387,7 @@ func (d *Dashboard) loadData() tea.Msg {
 	
 	return dashboardDataMsg{
 		summary:      summary,
+		burnRate:     burnRate,
 		transactions: transactions,
 		budgets:      budgets,
 	}
@@ -318,6 +395,7 @@ func (d *Dashboard) loadData() tea.Msg {
 
 type dashboardDataMsg struct {
 	summary      *models.TransactionSummary
+	burnRate     *models.BurnRateSummary
 	transactions []*models.Transaction
 	budgets      []*models.BudgetStatus
 	err          error

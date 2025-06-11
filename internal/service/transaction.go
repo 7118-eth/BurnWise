@@ -11,6 +11,7 @@ import (
 type TransactionService struct {
 	repo            *repository.TransactionRepository
 	currencyService *CurrencyService
+	recurringRepo   *repository.RecurringTransactionRepository
 }
 
 func NewTransactionService(repo *repository.TransactionRepository, currencyService *CurrencyService) *TransactionService {
@@ -18,6 +19,10 @@ func NewTransactionService(repo *repository.TransactionRepository, currencyServi
 		repo:            repo,
 		currencyService: currencyService,
 	}
+}
+
+func (s *TransactionService) SetRecurringRepo(recurringRepo *repository.RecurringTransactionRepository) {
+	s.recurringRepo = recurringRepo
 }
 
 func (s *TransactionService) Create(tx *models.Transaction) error {
@@ -130,4 +135,84 @@ func (s *TransactionService) ImportTransactions(transactions []*models.Transacti
 
 func (s *TransactionService) CountByCurrency(currency string) (int64, error) {
 	return s.repo.CountByCurrency(currency)
+}
+
+func (s *TransactionService) GetCurrentMonthBurnRate() (*models.BurnRateSummary, error) {
+	now := time.Now()
+	startOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+	endOfMonth := startOfMonth.AddDate(0, 1, 0).Add(-time.Second)
+	
+	// Get all expenses for the current month
+	filter := models.TransactionFilter{
+		Type:      models.TransactionTypeExpense,
+		StartDate: startOfMonth,
+		EndDate:   endOfMonth,
+	}
+	
+	transactions, err := s.repo.GetByFilter(&filter)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get transactions: %w", err)
+	}
+	
+	// Calculate burn rate
+	burnRate := &models.BurnRateSummary{}
+	
+	for _, tx := range transactions {
+		if tx.RecurringTransactionID != nil {
+			burnRate.RecurringExpenses += tx.AmountUSD
+			burnRate.RecurringCount++
+		} else {
+			burnRate.OneTimeExpenses += tx.AmountUSD
+			burnRate.OneTimeCount++
+		}
+	}
+	
+	burnRate.TotalBurn = burnRate.RecurringExpenses + burnRate.OneTimeExpenses
+	
+	// Calculate projections based on active recurring transactions
+	if s.recurringRepo != nil {
+		activeRecurring, err := s.recurringRepo.GetActive()
+		if err == nil {
+			monthlyProjection := 0.0
+			for _, recurring := range activeRecurring {
+				if recurring.Type == models.TransactionTypeExpense {
+					// Convert to monthly amount based on frequency
+					monthlyAmount := s.calculateMonthlyAmount(recurring)
+					monthlyProjection += monthlyAmount
+				}
+			}
+			burnRate.ProjectedMonthly = monthlyProjection
+			burnRate.ProjectedYearly = monthlyProjection * 12
+		}
+	} else {
+		// Fallback to current month's recurring if repo not available
+		burnRate.ProjectedMonthly = burnRate.RecurringExpenses
+		burnRate.ProjectedYearly = burnRate.RecurringExpenses * 12
+	}
+	
+	return burnRate, nil
+}
+
+func (s *TransactionService) calculateMonthlyAmount(recurring *models.RecurringTransaction) float64 {
+	amount := recurring.Amount
+	if recurring.Currency != "USD" {
+		// Convert to USD if needed
+		if amountUSD, err := s.currencyService.ConvertToUSD(amount, recurring.Currency); err == nil {
+			amount = amountUSD
+		}
+	}
+	
+	// Convert to monthly based on frequency
+	switch recurring.Frequency {
+	case models.FrequencyDaily:
+		return amount * 30.44 / float64(recurring.FrequencyValue) // Average days per month
+	case models.FrequencyWeekly:
+		return amount * 4.33 / float64(recurring.FrequencyValue) // Average weeks per month
+	case models.FrequencyMonthly:
+		return amount / float64(recurring.FrequencyValue)
+	case models.FrequencyYearly:
+		return amount / (12 * float64(recurring.FrequencyValue))
+	default:
+		return amount
+	}
 }

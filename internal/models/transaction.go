@@ -90,3 +90,13 @@ type TransactionSummary struct {
 func (ts *TransactionSummary) CalculateBalance() {
 	ts.Balance = ts.TotalIncome - ts.TotalExpenses
 }
+
+type BurnRateSummary struct {
+	RecurringExpenses   float64
+	RecurringCount      int
+	OneTimeExpenses     float64
+	OneTimeCount        int
+	TotalBurn           float64
+	ProjectedMonthly    float64
+	ProjectedYearly     float64
+}

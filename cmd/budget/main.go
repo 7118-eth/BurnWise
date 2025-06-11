@@ -53,6 +53,7 @@ func main() {
 
 	currencyService := service.NewCurrencyService(settingsService)
 	txService := service.NewTransactionService(txRepo, currencyService)
+	txService.SetRecurringRepo(recurringRepo)
 	categoryService := service.NewCategoryService(categoryRepo)
 	budgetService := service.NewBudgetService(budgetRepo, txRepo)
 	recurringService := service.NewRecurringTransactionService(recurringRepo, txRepo, currencyService)
