@@ -101,7 +101,7 @@ func (d *Dashboard) renderHeader() string {
 	now := time.Now()
 	month := now.Format("January 2006")
 	
-	title := styles.TitleStyle.Render("💰 Budget Tracker")
+	title := styles.TitleStyle.Render("🔥 BurnWise")
 	date := lipgloss.NewStyle().
 		Foreground(styles.Muted).
 		Render(month)
