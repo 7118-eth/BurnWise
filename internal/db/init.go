@@ -69,8 +69,8 @@ func seedDefaultData(db *gorm.DB) error {
 func GetDefaultDBPath() string {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return "data/budget.db"
+		return "data/burnwise.db"
 	}
 
-	return filepath.Join(homeDir, ".local", "share", "budget-tracker", "budget.db")
+	return filepath.Join(homeDir, ".local", "share", "burnwise", "burnwise.db")
 }

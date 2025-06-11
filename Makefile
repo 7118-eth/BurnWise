@@ -1,7 +1,7 @@
 .PHONY: all build run test test-short test-cover clean install dev lint help
 
 # Variables
-APP_NAME := budget
+APP_NAME := burnwise
 BUILD_DIR := ./bin
 GO_FILES := $(shell find . -name '*.go' -type f)
 TEST_DATA_DIR := ./test/data
@@ -14,7 +14,7 @@ all: build
 build:
 	@echo "Building $(APP_NAME)..."
 	@mkdir -p $(BUILD_DIR)
-	@go build -o $(BUILD_DIR)/$(APP_NAME) ./cmd/budget
+	@go build -o $(BUILD_DIR)/$(APP_NAME) ./cmd/burnwise
 
 # Run the application
 run: build
@@ -23,7 +23,7 @@ run: build
 # Install the application
 install: build
 	@echo "Installing $(APP_NAME)..."
-	@go install ./cmd/budget
+	@go install ./cmd/burnwise
 
 # Run all tests
 test:
@@ -84,16 +84,16 @@ vuln:
 # Database operations
 db-clean:
 	@echo "Cleaning database..."
-	@rm -f data/budget.db data/budget.db-*
+	@rm -f data/burnwise.db data/burnwise.db-*
 
 db-backup:
 	@echo "Backing up database..."
 	@mkdir -p backups
-	@cp data/budget.db backups/budget-$$(date +%Y%m%d-%H%M%S).db
+	@cp data/burnwise.db backups/burnwise-$$(date +%Y%m%d-%H%M%S).db
 
 # Help target
 help:
-	@echo "Budget Tracker Makefile"
+	@echo "BurnWise Makefile"
 	@echo ""
 	@echo "Available targets:"
 	@echo "  make build      - Build the application"
